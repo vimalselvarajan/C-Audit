@@ -13,7 +13,7 @@ dependencies = [
   "pydantic>=2.9,<3",
   "jsonschema>=4.23,<5",
   "typer>=0.15,<1",
-  "rich>=13.9,<15",
+  "rich>=13.9,<16",
   "libclang>=18.1.1,<19",
   "google-genai>=1.0,<2",
   # Part 07: the curated check profile is YAML, and `clang-tidy --export-fixes`
