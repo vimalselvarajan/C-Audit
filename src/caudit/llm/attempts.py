@@ -28,6 +28,7 @@ __all__ = [
     "Attempt",
     "AttemptOutcome",
     "request_adjudication",
+    "request_structured",
     "request_triage",
 ]
 
@@ -143,6 +144,42 @@ def request_triage(
         check_citations=None,
     )
     return parsed, attempts
+
+
+def request_structured(
+    provider: LLMProvider,
+    prompt: AssembledPrompt,
+    *,
+    tier: Tier,
+    model: type[Any],
+    config: LLMConfig,
+    account: RunAccount,
+    response_schema: dict[str, Any],
+    schema_version: str,
+    cache: ResponseCache | None = None,
+    sleeper: Callable[[float], None] = time.sleep,
+    check_citations: Sequence[str] | None = None,
+) -> tuple[Any, list[Attempt], Usage]:
+    """Request and validate an arbitrary structured response model.
+
+    Product adjudication and triage have narrower wrappers above because they
+    attach their respective result contracts. Experimental controls use a
+    smaller schema but must retain the same retry, validation, cache, and
+    accounting behaviour rather than reimplementing that safety boundary.
+    """
+    return _attempt_loop(
+        provider,
+        prompt,
+        tier=tier,
+        model=model,
+        config=config,
+        account=account,
+        response_schema=response_schema,
+        schema_version=schema_version,
+        cache=cache,
+        sleeper=sleeper,
+        check_citations=check_citations,
+    )
 
 
 def request_adjudication(
