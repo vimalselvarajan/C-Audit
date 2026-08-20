@@ -1,0 +1,28 @@
+{
+  "description": "A confident paragraph. Nothing here may ever become a finding.",
+  "name": "adjudication-prose",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "text": "Yes, this is a classic stack buffer overflow (CWE-787). The call to strcpy at line 27 copies an attacker-controlled string into a 16-byte buffer with no bound, so it is exploitable for remote code execution. I am highly confident. Recommended fix: use strncpy.",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    },
+    {
+      "text": "Yes, this is a classic stack buffer overflow (CWE-787). The call to strcpy at line 27 copies an attacker-controlled string into a 16-byte buffer with no bound, so it is exploitable for remote code execution. I am highly confident. Recommended fix: use strncpy.",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    },
+    {
+      "text": "Yes, this is a classic stack buffer overflow (CWE-787). The call to strcpy at line 27 copies an attacker-controlled string into a 16-byte buffer with no bound, so it is exploitable for remote code execution. I am highly confident. Recommended fix: use strncpy.",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "A refusal the retry loop must not repeat: the request itself is wrong.",
+  "name": "provider-refused",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "detail": "provider rejected the request (400): unknown model",
+      "fails": "refused"
+    }
+  ]
+}

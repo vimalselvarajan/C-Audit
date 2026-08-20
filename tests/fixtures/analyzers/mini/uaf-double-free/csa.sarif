@@ -1,0 +1,75 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "clang",
+          "version": "unrecorded",
+          "rules": [{ "id": "unix.Malloc", "name": "unix.Malloc" }]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "unix.Malloc",
+          "level": "warning",
+          "message": { "text": "Use of memory after it is freed" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/session.c" },
+                "region": { "startLine": 24, "startColumn": 12 }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": { "text": "Memory is allocated" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/session.c" },
+                          "region": { "startLine": 31, "startColumn": 16 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "message": { "text": "Calling 'close_session'" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/session.c" },
+                          "region": { "startLine": 38, "startColumn": 5 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "message": { "text": "Memory is released" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/session.c" },
+                          "region": { "startLine": 18, "startColumn": 5 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "message": { "text": "Use of memory after it is freed" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/session.c" },
+                          "region": { "startLine": 24, "startColumn": 12 }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

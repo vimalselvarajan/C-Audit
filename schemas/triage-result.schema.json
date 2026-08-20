@@ -1,0 +1,98 @@
+{
+  "$defs": {
+    "Impact": {
+      "additionalProperties": false,
+      "description": "What can happen — deliberately silent about whether it can be reached.",
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_supports": {
+          "minLength": 1,
+          "title": "Evidence Supports",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ImpactKind"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "kind",
+        "severity",
+        "description",
+        "evidence_supports"
+      ],
+      "title": "Impact",
+      "type": "object"
+    },
+    "ImpactKind": {
+      "description": "What can happen if the defect is triggered.",
+      "enum": [
+        "memory_corruption",
+        "information_disclosure",
+        "denial_of_service",
+        "code_execution",
+        "undefined_behavior",
+        "resource_exhaustion",
+        "incorrect_result"
+      ],
+      "title": "ImpactKind",
+      "type": "string"
+    },
+    "Severity": {
+      "description": "Weakness severity in isolation, before reachability is considered.",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "TriageDisposition": {
+      "description": "What the cheap tier thinks should happen next.",
+      "enum": [
+        "dismiss",
+        "adjudicate"
+      ],
+      "title": "TriageDisposition",
+      "type": "string"
+    }
+  },
+  "$id": "https://caudit.dev/schemas/triage-result.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "The triage tier's answer, and the input to :func:`~caudit.llm.provider.route`.\n\n``ambiguous`` and ``impact`` are separate from ``disposition`` because the\nrouting truth table is over those two alone. Reusing this type for the\nadjudication tier's answer — see :meth:`from_verdict` — is what keeps the\nescalation rule a single table rather than two rules that can drift.",
+  "properties": {
+    "ambiguous": {
+      "title": "Ambiguous",
+      "type": "boolean"
+    },
+    "disposition": {
+      "$ref": "#/$defs/TriageDisposition"
+    },
+    "impact": {
+      "$ref": "#/$defs/Impact"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition",
+    "ambiguous",
+    "impact",
+    "rationale"
+  ],
+  "title": "TriageResult",
+  "type": "object",
+  "x-caudit-schema-version": "1.7.0"
+}

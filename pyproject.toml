@@ -1,0 +1,108 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "caudit"
+version = "0.1.0"
+description = "Compiler-aware, evidence-gated C/C++ auditing"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "pydantic>=2.9,<3",
+  "jsonschema>=4.23,<5",
+  "typer>=0.15,<1",
+  "rich>=13.9,<15",
+  "libclang>=18.1.1,<19",
+  "google-genai>=1.0,<2",
+  # Part 07: the curated check profile is YAML, and `clang-tidy --export-fixes`
+  # emits YAML. Both are runtime inputs, so this is not a dev-only dependency.
+  "pyyaml>=6.0,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<8",
+  "hypothesis>=6.112,<7",
+  "ruff>=0.8,<1",
+  "mypy>=1.13,<2",
+  "coverage>=7.6,<8",
+  "types-PyYAML>=6.0,<7",
+  # Part 08 validates its SARIF output against the vendored official schema.
+  "types-jsonschema>=4.23,<5",
+  # .pre-commit-config.yaml was unrunnable without this; `make guard` is the
+  "import-linter>=2.3,<3",
+  # copy CI enforces, the hooks are the copy that fires before a bad commit.
+  "pre-commit>=4,<5",
+]
+
+[project.scripts]
+caudit = "caudit.cli.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/caudit"]
+
+# --------------------------------------------------------------------------
+# Quality gates. `make check` runs all three; CI invokes the same target so a
+# local pass and a CI pass cannot diverge (AC-01-7).
+# --------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+extend-exclude = ["inspiration_repos"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF", "PTH", "ARG"]
+ignore = [
+  "SIM108", # ternaries are not always clearer than an if/else
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ARG001", "ARG002"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests", "tools"]
+exclude = "(^|/)inspiration_repos/"
+plugins = ["pydantic.mypy"]
+warn_unreachable = true
+enable_error_code = ["redundant-expr", "possibly-undefined", "truthy-bool"]
+
+[[tool.mypy.overrides]]
+module = ["clang.*", "google.genai.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# needs_clang, needs_network and slow are deselected by default, so the default
+# suite is offline, deterministic, and runnable with no LLVM installed.
+addopts = "-m 'not needs_clang and not needs_network and not slow' --strict-markers"
+markers = [
+  "needs_clang: requires a real Clang/LLVM toolchain on PATH",
+  # Selected by default: the wheel bundles its own shared library, so indexing
+  # needs no system LLVM. Skips with a reason if the wheel cannot be loaded.
+  "needs_libclang: requires the libclang wheel (a hard dependency)",
+  "needs_network: opens a socket",
+  "slow: perf budgets or large downloaded corpora",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["src/caudit"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "@overload",
+]

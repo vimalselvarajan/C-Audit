@@ -1,0 +1,324 @@
+# C Audit curated check profile — the ruleset that produces candidates.
+#
+# Committed configuration with its own version string. `version` is recorded in
+# the run manifest so a report names the ruleset that produced it; bump it
+# whenever a check is added, removed, or re-annotated, because the same
+# repository scanned under two profiles is two different measurements.
+#
+# Every entry carries `families`: the weakness families that check feeds, so
+# part 04 can attribute a detection to a rule and the profile can be tuned with
+# data rather than taste. An entry with no family annotation fails validation.
+# `cwe` is deliberately optional and deliberately often empty — an unmapped
+# rule produces a candidate with no CWE, routed to review, rather than a
+# guessed classification.
+#
+# `id` may be an exact rule id or a trailing-`*` glob. Exact ids win over
+# globs, and the longest matching glob wins over a shorter one.
+
+version: "1"
+name: security
+description: >
+  Path-sensitive Clang Static Analyzer checkers, a narrow clang-tidy profile,
+  and the security-relevant compile diagnostics, each annotated with the
+  weakness family it feeds.
+
+# --------------------------------------------------------------------------
+# Compile diagnostics.
+#
+# `flags` are added when C Audit invokes the compiler for analysis. They are
+# never written back into the build: the compilation database stays the
+# build's own record.
+# --------------------------------------------------------------------------
+diagnostics:
+  flags:
+    - -Wall
+    - -Wextra
+    - -Wformat-security
+    - -Warray-bounds
+    - -Wconversion
+    - -Wshadow
+  # Clang's own text form. The plan names `-fdiagnostics-format=json`, which
+  # GCC implements and Clang does not; `json` is supported by the parser and
+  # selectable here for a GCC-driven build. See analyzers/diagnostics.py.
+  format: text
+  checks:
+    - id: -Wformat-security
+      families: [injection]
+      cwe: [CWE-134]
+      note: A non-literal format string is the whole of CWE-134.
+    - id: -Wformat-nonliteral
+      families: [injection]
+      cwe: [CWE-134]
+    - id: -Warray-bounds
+      families: [out_of_bounds]
+      cwe: [CWE-125, CWE-787]
+    - id: -Wstringop-overflow
+      families: [out_of_bounds]
+      cwe: [CWE-787]
+    - id: -Wconversion
+      families: [integer]
+      cwe: [CWE-197]
+    - id: -Wshorten-64-to-32
+      families: [integer]
+      cwe: [CWE-197]
+    - id: -Wsign-conversion
+      families: [integer]
+      cwe: [CWE-195, CWE-196]
+    - id: -Wsign-compare
+      families: [integer]
+      cwe: []
+      note: Signedness mismatch in a comparison; the consequence depends on use.
+    - id: -Wuninitialized
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: -Wconditional-uninitialized
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: -Wreturn-stack-address
+      families: [memory_lifetime]
+      cwe: [CWE-825]
+    - id: -Wdangling
+      families: [memory_lifetime]
+      cwe: [CWE-825]
+    - id: -Wimplicit-function-declaration
+      families: [maintainability]
+      cwe: []
+      note: >
+        Not a weakness on its own, but it means the compiler guessed a
+        prototype, so every type-based claim about the call is unreliable.
+    - id: -Wshadow
+      families: [maintainability]
+      cwe: []
+      note: A shadowed name is the spec's "unclear ownership" signal.
+
+# --------------------------------------------------------------------------
+# Clang Static Analyzer.
+#
+# Checkers are enabled individually rather than by package: `alpha.*` checkers
+# are experimental and noisy, and naming each one is what lets part 04 track
+# its false-positive contribution and lets this file be tuned with data.
+# --------------------------------------------------------------------------
+csa:
+  checks:
+    - id: core.CallAndMessage
+      families: [null_uninitialized]
+      cwe: [CWE-476]
+    - id: core.DivideZero
+      families: [integer]
+      cwe: [CWE-369]
+    - id: core.NonNullParamChecker
+      families: [null_uninitialized]
+      cwe: [CWE-476]
+    - id: core.NullDereference
+      families: [null_uninitialized]
+      cwe: [CWE-476]
+    - id: core.StackAddressEscape
+      families: [memory_lifetime]
+      cwe: [CWE-825]
+    - id: core.UndefinedBinaryOperatorResult
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: core.VLASize
+      families: [integer]
+      cwe: []
+      note: >
+        Fires on a zero, negative, or undefined VLA size. Which of those it is
+        decides the CWE, and the diagnostic alone does not say, so it maps to
+        none and the candidate is routed to review.
+    - id: core.uninitialized.ArraySubscript
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: core.uninitialized.Assign
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: core.uninitialized.Branch
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: core.uninitialized.CapturedBlockVariable
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: core.uninitialized.UndefReturn
+      families: [null_uninitialized]
+      cwe: [CWE-457]
+    - id: unix.Malloc
+      families: [memory_lifetime, resource_leak]
+      cwe: [CWE-401, CWE-416, CWE-415]
+    - id: unix.MallocSizeof
+      families: [out_of_bounds]
+      cwe: [CWE-131]
+    - id: unix.MismatchedDeallocator
+      families: [memory_lifetime]
+      cwe: [CWE-762]
+    - id: unix.cstring.BadSizeArg
+      families: [out_of_bounds]
+      cwe: [CWE-131]
+    - id: unix.cstring.NullArg
+      families: [null_uninitialized]
+      cwe: [CWE-476]
+    - id: security.insecureAPI.strcpy
+      families: [out_of_bounds]
+      cwe: [CWE-787]
+    - id: alpha.security.ArrayBound
+      families: [out_of_bounds]
+      cwe: [CWE-125, CWE-787]
+    - id: alpha.security.ArrayBoundV2
+      families: [out_of_bounds]
+      cwe: [CWE-125, CWE-787]
+    - id: alpha.security.ReturnPtrRange
+      families: [out_of_bounds]
+      cwe: [CWE-125]
+    - id: alpha.unix.cstring.OutOfBounds
+      families: [out_of_bounds]
+      cwe: [CWE-787, CWE-125]
+    - id: alpha.unix.Stream
+      families: [resource_leak]
+      cwe: [CWE-775]
+    - id: alpha.core.CastSize
+      families: [out_of_bounds]
+      cwe: [CWE-131]
+    - id: alpha.core.Conversion
+      families: [integer]
+      cwe: [CWE-197, CWE-195]
+    - id: alpha.core.SizeofPtr
+      families: [out_of_bounds]
+      cwe: [CWE-131]
+    - id: alpha.core.TestAfterDivZero
+      families: [integer]
+      cwe: [CWE-369]
+    - id: alpha.core.PointerArithm
+      families: [out_of_bounds]
+      cwe: []
+    - id: alpha.core.PointerSub
+      families: [out_of_bounds]
+      cwe: []
+    - id: alpha.core.IdenticalExpr
+      families: [maintainability]
+      cwe: []
+      note: Duplicated validation, which the spec lists as a maintainability signal.
+
+# --------------------------------------------------------------------------
+# clang-tidy.
+#
+# The glob entries decide what runs; the exact entries under them decide what
+# a rule maps to. A check that only matches a glob still produces a candidate —
+# with no CWE, routed to review — which is how a newly added upstream check
+# reaches a human instead of being dropped.
+# --------------------------------------------------------------------------
+tidy:
+  checks:
+    - id: bugprone-*
+      families: [out_of_bounds, memory_lifetime, null_uninitialized, integer]
+      cwe: []
+    - id: cert-*
+      families: [out_of_bounds, memory_lifetime, integer, injection]
+      cwe: []
+    - id: clang-analyzer-*
+      families:
+        [
+          out_of_bounds,
+          memory_lifetime,
+          null_uninitialized,
+          integer,
+          resource_leak,
+          injection,
+        ]
+      cwe: []
+    - id: clang-diagnostic-*
+      families: [out_of_bounds, integer, null_uninitialized, injection]
+      cwe: []
+      note: >
+        clang-tidy re-reports compiler diagnostics under this prefix. The exact
+        mapping is resolved through the `diagnostics` section by rewriting
+        clang-diagnostic-foo to -Wfoo, so one warning has one CWE regardless of
+        which producer surfaced it.
+
+    # Named mappings. Each one is a check inside a glob above whose CWE is
+    # accurate enough to state.
+    - id: bugprone-use-after-move
+      families: [memory_lifetime]
+      cwe: [CWE-416]
+    - id: bugprone-dangling-handle
+      families: [memory_lifetime]
+      cwe: [CWE-416]
+    - id: bugprone-sizeof-expression
+      families: [out_of_bounds]
+      cwe: [CWE-131]
+    - id: bugprone-misplaced-widening-cast
+      families: [integer]
+      cwe: [CWE-190]
+    - id: bugprone-integer-division
+      families: [integer]
+      cwe: [CWE-197]
+    - id: bugprone-signed-char-misuse
+      families: [integer]
+      cwe: [CWE-195]
+    - id: bugprone-too-small-loop-variable
+      families: [integer]
+      cwe: [CWE-190]
+    - id: bugprone-not-null-terminated-result
+      families: [out_of_bounds]
+      cwe: [CWE-787]
+    - id: bugprone-unhandled-self-assignment
+      families: [memory_lifetime]
+      cwe: [CWE-416]
+    - id: cert-str34-c
+      families: [integer]
+      cwe: [CWE-195]
+    - id: clang-analyzer-unix.Malloc
+      families: [memory_lifetime, resource_leak]
+      cwe: [CWE-401, CWE-416, CWE-415]
+    - id: clang-analyzer-security.insecureAPI.strcpy
+      families: [out_of_bounds]
+      cwe: [CWE-787]
+    - id: clang-analyzer-optin.taint.TaintedDiv
+      families: [integer]
+      cwe: [CWE-369]
+
+    # The security-relevant maintainability slice. Narrow on purpose: these
+    # feed the spec's ownership, complexity, and duplicated-validation signals,
+    # and nothing here is a vulnerability claim.
+    - id: readability-function-cognitive-complexity
+      families: [maintainability]
+      cwe: []
+    - id: readability-function-size
+      families: [maintainability]
+      cwe: []
+    - id: readability-non-const-parameter
+      families: [maintainability]
+      cwe: []
+      note: An output parameter that is never written signals unclear ownership.
+    - id: misc-no-recursion
+      families: [maintainability]
+      cwe: []
+      note: Unbounded recursion is where a stack exhaustion argument starts.
+    - id: misc-redundant-expression
+      families: [maintainability]
+      cwe: []
+      note: Duplicated validation.
+
+    # Disabled, with the reason. Kept in the file rather than deleted so a
+    # reader can see what was considered and why it is off.
+    - id: bugprone-easily-swappable-parameters
+      families: [maintainability]
+      cwe: []
+      enabled: false
+      note: Fires on almost every C API; the noise drowns the profile.
+    - id: bugprone-narrowing-conversions
+      families: [integer]
+      cwe: [CWE-197]
+      enabled: false
+      note: >
+        C++-oriented and extremely noisy on C code that converts deliberately.
+        -Wconversion covers the same ground under the diagnostics producer.
+    - id: cert-dcl03-c
+      families: [maintainability]
+      cwe: []
+      enabled: false
+      note: Static-assert style, not a weakness.
+    - id: cert-err33-c
+      families: [maintainability]
+      cwe: []
+      enabled: false
+      note: >
+        Unchecked return values (CWE-252) are out of the MVP's weakness
+        families, and the check fires on every printf.

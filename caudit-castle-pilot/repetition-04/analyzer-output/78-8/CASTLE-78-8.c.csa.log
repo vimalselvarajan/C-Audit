@@ -1,0 +1,7 @@
+CASTLE-78-8.c:17:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [security.insecureAPI.strcpy]
+   17 |         strcpy(sys, cmd);
+      |         ^~~~~~
+CASTLE-78-8.c:18:9: warning: Call to function 'strcat' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcat'. CWE-119 [security.insecureAPI.strcpy]
+   18 |         strcat(sys, buff);
+      |         ^~~~~~
+2 warnings generated.

@@ -1,0 +1,16 @@
+{
+  "case_id": "uaf-double-free",
+  "family": "memory_lifetime",
+  "description": "Buffer freed in close_session and dereferenced afterwards through a stale pointer.",
+  "analyzer_blind_spot": false,
+  "ground_truth": [
+    {
+      "path": "src/session.c",
+      "line": 24,
+      "cwe": "CWE-416",
+      "family": "memory_lifetime",
+      "variant": "vulnerable",
+      "note": "strlen reads through session::buffer after close_session freed it"
+    }
+  ]
+}

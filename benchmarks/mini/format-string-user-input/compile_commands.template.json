@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/logline.c",
+    "output": "${CASE_ROOT}/build/logline.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/logline.c", "-o", "build/logline.o"]
+  }
+]

@@ -1,0 +1,583 @@
+{
+  "$defs": {
+    "Confidence": {
+      "description": "From the spec's finding contract. ``review_required`` is not a score.",
+      "enum": [
+        "high",
+        "medium",
+        "review_required"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "description": "One citable region. The ``evidence_id`` is content-addressed.",
+      "properties": {
+        "evidence_id": {
+          "minLength": 1,
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/EvidenceKind"
+        },
+        "provenance": {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "title": "Provenance",
+          "type": "array"
+        },
+        "region": {
+          "$ref": "#/$defs/SourceRegion"
+        },
+        "symbol": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Symbol"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "evidence_id",
+        "kind",
+        "region",
+        "provenance"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "EvidenceKind": {
+      "description": "What role a region plays in an argument.",
+      "enum": [
+        "primary_code",
+        "supporting_code",
+        "type_decl",
+        "macro_def",
+        "call_edge",
+        "analyzer_diagnostic",
+        "control_flow_step"
+      ],
+      "title": "EvidenceKind",
+      "type": "string"
+    },
+    "Exploitability": {
+      "description": "Whether an attacker can drive it — never inferred from impact.",
+      "enum": [
+        "unknown",
+        "unlikely",
+        "plausible",
+        "demonstrated"
+      ],
+      "title": "Exploitability",
+      "type": "string"
+    },
+    "Impact": {
+      "additionalProperties": false,
+      "description": "What can happen — deliberately silent about whether it can be reached.",
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_supports": {
+          "minLength": 1,
+          "title": "Evidence Supports",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ImpactKind"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "kind",
+        "severity",
+        "description",
+        "evidence_supports"
+      ],
+      "title": "Impact",
+      "type": "object"
+    },
+    "ImpactKind": {
+      "description": "What can happen if the defect is triggered.",
+      "enum": [
+        "memory_corruption",
+        "information_disclosure",
+        "denial_of_service",
+        "code_execution",
+        "undefined_behavior",
+        "resource_exhaustion",
+        "incorrect_result"
+      ],
+      "title": "ImpactKind",
+      "type": "string"
+    },
+    "Limitation": {
+      "additionalProperties": false,
+      "description": "One named blind spot, with enough detail to act on it.",
+      "properties": {
+        "affects": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Affects"
+        },
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/LimitationKind"
+        }
+      },
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "title": "Limitation",
+      "type": "object"
+    },
+    "LimitationKind": {
+      "description": "Blind spots the run knows about. Recorded, never implicit.",
+      "enum": [
+        "missing_build_target",
+        "revision_unavailable",
+        "ambiguous_build_config",
+        "unresolved_indirect_call",
+        "generated_code_unavailable",
+        "macro_expansion_unavailable",
+        "no_evidence_expansion",
+        "file_too_large",
+        "excluded_by_filter",
+        "parse_failed",
+        "analyzer_failed",
+        "token_budget_exhausted",
+        "inline_assembly",
+        "toolchain_unavailable",
+        "claim_downgraded",
+        "provenance_unchecked"
+      ],
+      "title": "LimitationKind",
+      "type": "string"
+    },
+    "MaintainabilityImpact": {
+      "additionalProperties": false,
+      "description": "How the recommendation lands on the code that has to live with it.",
+      "properties": {
+        "complexity": {
+          "minLength": 1,
+          "title": "Complexity",
+          "type": "string"
+        },
+        "coupling": {
+          "minLength": 1,
+          "title": "Coupling",
+          "type": "string"
+        },
+        "effort": {
+          "$ref": "#/$defs/Severity",
+          "default": "medium"
+        },
+        "ownership": {
+          "minLength": 1,
+          "title": "Ownership",
+          "type": "string"
+        },
+        "regression_risk": {
+          "minLength": 1,
+          "title": "Regression Risk",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ownership",
+        "complexity",
+        "coupling",
+        "regression_risk"
+      ],
+      "title": "MaintainabilityImpact",
+      "type": "object"
+    },
+    "Producer": {
+      "description": "What kind of component produced a fact.",
+      "enum": [
+        "clang_diagnostic",
+        "csa",
+        "clang_tidy",
+        "index",
+        "llm",
+        "fixture"
+      ],
+      "title": "Producer",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Which analyzer, compiler fact, or retrieval step produced a fact.",
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "producer": {
+          "$ref": "#/$defs/Producer"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        },
+        "tool_name": {
+          "minLength": 1,
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "minLength": 1,
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "producer",
+        "tool_name",
+        "tool_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Reachability": {
+      "description": "Whether the defect can be reached — argued separately from impact.",
+      "enum": [
+        "unknown",
+        "argued",
+        "demonstrated"
+      ],
+      "title": "Reachability",
+      "type": "string"
+    },
+    "Remediation": {
+      "additionalProperties": false,
+      "description": "A fix strategy. The MVP recommends; it does not modify code.",
+      "properties": {
+        "example": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Example"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "references": {
+          "items": {
+            "type": "string"
+          },
+          "title": "References",
+          "type": "array"
+        },
+        "strategy": {
+          "minLength": 1,
+          "title": "Strategy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy",
+        "rationale"
+      ],
+      "title": "Remediation",
+      "type": "object"
+    },
+    "ReviewReason": {
+      "description": "A machine-checkable reason — a value part 11 branches on, not free text.",
+      "enum": [
+        "all_citations_resolved",
+        "hash_mismatch",
+        "symbol_unresolved",
+        "missing_file",
+        "evidence_unavailable",
+        "impact_exceeds_evidence",
+        "assumptions_unstated",
+        "context_budget_exceeded",
+        "citation_unresolved",
+        "call_edge_unresolved",
+        "evidence_does_not_support_cwe",
+        "model_rejected",
+        "model_inconclusive",
+        "schema_invalid_response",
+        "provider_unavailable",
+        "run_budget_exhausted",
+        "analyzer_only",
+        "out_of_scope_family",
+        "unresolved_indirect_call",
+        "incomplete_build_context",
+        "schema_violation",
+        "cwe_mapping_rejected",
+        "conflicting_analyzers"
+      ],
+      "title": "ReviewReason",
+      "type": "string"
+    },
+    "Severity": {
+      "description": "Weakness severity in isolation, before reachability is considered.",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SourceRegion": {
+      "additionalProperties": false,
+      "description": "A byte- and line-addressed span of one file, with its content hash.\n\nBoth addressings are stored so a mismatch between them is detectable:\nlines are 1-based inclusive on both ends (matching Clang and SARIF),\nbytes are half-open ``[start_byte, end_byte)``.",
+      "properties": {
+        "end_byte": {
+          "minimum": 0,
+          "title": "End Byte",
+          "type": "integer"
+        },
+        "end_line": {
+          "minimum": 1,
+          "title": "End Line",
+          "type": "integer"
+        },
+        "path": {
+          "format": "path",
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "start_byte": {
+          "minimum": 0,
+          "title": "Start Byte",
+          "type": "integer"
+        },
+        "start_line": {
+          "minimum": 1,
+          "title": "Start Line",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "start_line",
+        "end_line",
+        "start_byte",
+        "end_byte",
+        "sha256"
+      ],
+      "title": "SourceRegion",
+      "type": "object"
+    },
+    "Symbol": {
+      "additionalProperties": false,
+      "description": "A named program entity a finding can be attached to.",
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "qualified_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Qualified Name"
+        },
+        "usr": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Usr"
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "Symbol",
+      "type": "object"
+    }
+  },
+  "$id": "https://caudit.dev/schemas/finding.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A reported vulnerability, or a review-required candidate.\n\nWhich of the two it is depends on ``confidence`` alone. The two are never\nsummed anywhere in this codebase.",
+  "properties": {
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "confidence_reason": {
+      "$ref": "#/$defs/ReviewReason"
+    },
+    "cwe": {
+      "pattern": "^CWE-\\d{1,5}$",
+      "title": "Cwe",
+      "type": "string"
+    },
+    "cwe_rationale": {
+      "title": "Cwe Rationale",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceItem"
+      },
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "exploitability": {
+      "$ref": "#/$defs/Exploitability"
+    },
+    "finding_id": {
+      "minLength": 1,
+      "title": "Finding Id",
+      "type": "string"
+    },
+    "fingerprint": {
+      "minLength": 1,
+      "title": "Fingerprint",
+      "type": "string"
+    },
+    "impact": {
+      "$ref": "#/$defs/Impact"
+    },
+    "limitations": {
+      "items": {
+        "$ref": "#/$defs/Limitation"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "location": {
+      "$ref": "#/$defs/SourceRegion"
+    },
+    "maintainability_impact": {
+      "$ref": "#/$defs/MaintainabilityImpact"
+    },
+    "preconditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Preconditions",
+      "type": "array"
+    },
+    "provenance": {
+      "items": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "minItems": 1,
+      "title": "Provenance",
+      "type": "array"
+    },
+    "reachability": {
+      "$ref": "#/$defs/Reachability"
+    },
+    "remediation": {
+      "$ref": "#/$defs/Remediation"
+    },
+    "schema_version": {
+      "default": "1.7.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "symbol": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Symbol"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "finding_id",
+    "fingerprint",
+    "cwe",
+    "cwe_rationale",
+    "location",
+    "evidence",
+    "preconditions",
+    "impact",
+    "reachability",
+    "exploitability",
+    "provenance",
+    "confidence",
+    "confidence_reason",
+    "remediation",
+    "maintainability_impact",
+    "limitations"
+  ],
+  "title": "Finding",
+  "type": "object",
+  "x-caudit-schema-version": "1.7.0"
+}

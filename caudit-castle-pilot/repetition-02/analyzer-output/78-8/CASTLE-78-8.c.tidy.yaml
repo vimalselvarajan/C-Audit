@@ -1,0 +1,140 @@
+---
+MainSourceFile:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+Diagnostics:
+  - DiagnosticName:  clang-diagnostic-unused-parameter
+    DiagnosticMessage:
+      Message:         'unused parameter ''argc'''
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      174
+      Replacements:    []
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-diagnostic-unused-parameter
+    DiagnosticMessage:
+      Message:         'unused parameter ''argv'''
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      186
+      Replacements:    []
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-analyzer-security.insecureAPI.strcpy
+    DiagnosticMessage:
+      Message:         'Call to function ''strcpy'' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as ''strlcpy''. CWE-119'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      309
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+          FileOffset:      309
+          Length:          6
+    Notes:
+      - Message:         'Call to function ''strcpy'' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as ''strlcpy''. CWE-119'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+        FileOffset:      309
+        Replacements:    []
+        Ranges:
+          - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+            FileOffset:      309
+            Length:          6
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-analyzer-security.insecureAPI.strcpy
+    DiagnosticMessage:
+      Message:         'Call to function ''strcat'' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as ''strlcat''. CWE-119'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      335
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+          FileOffset:      335
+          Length:          6
+    Notes:
+      - Message:         'Call to function ''strcat'' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as ''strlcat''. CWE-119'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+        FileOffset:      335
+        Replacements:    []
+        Ranges:
+          - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+            FileOffset:      335
+            Length:          6
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-diagnostic-shadow
+    DiagnosticMessage:
+      Message:         declaration shadows a local variable
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      372
+      Replacements:    []
+    Notes:
+      - Message:         previous declaration is here
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+        FileOffset:      209
+        Replacements:    []
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-diagnostic-sign-compare
+    DiagnosticMessage:
+      Message:         'comparison of integers of different signs: ''int'' and ''unsigned long'''
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      381
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+          FileOffset:      379
+          Length:          1
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+          FileOffset:      383
+          Length:          11
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+    DiagnosticMessage:
+      Message:         'Call to function ''fprintf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''fprintf_s'' in case of C11'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      492
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+          FileOffset:      492
+          Length:          7
+    Notes:
+      - Message:         'Call to function ''fprintf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''fprintf_s'' in case of C11'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+        FileOffset:      492
+        Replacements:    []
+        Ranges:
+          - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+            FileOffset:      492
+            Length:          7
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  cert-env33-c
+    DiagnosticMessage:
+      Message:         'calling ''system'' uses a command processor'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      648
+      Replacements:    []
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+  - DiagnosticName:  clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+    DiagnosticMessage:
+      Message:         'Call to function ''fprintf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''fprintf_s'' in case of C11'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+      FileOffset:      681
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+          FileOffset:      681
+          Length:          7
+    Notes:
+      - Message:         'Call to function ''fprintf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''fprintf_s'' in case of C11'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+        FileOffset:      681
+        Replacements:    []
+        Ranges:
+          - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c'
+            FileOffset:      681
+            Length:          7
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8'
+...

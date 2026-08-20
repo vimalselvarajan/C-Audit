@@ -1,0 +1,48 @@
+---
+MainSourceFile:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+Diagnostics:
+  - DiagnosticName:  clang-diagnostic-sign-conversion
+    DiagnosticMessage:
+      Message:         'implicit conversion changes signedness: ''int'' to ''unsigned long'''
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+      FileOffset:      103
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+          FileOffset:      103
+          Length:          4
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+          FileOffset:      108
+          Length:          1
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6'
+  - DiagnosticName:  cert-err34-c
+    DiagnosticMessage:
+      Message:         '''scanf'' used to convert a string to an integer value, but function will not report conversion errors; consider using ''strtol'' instead'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+      FileOffset:      471
+      Replacements:    []
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6'
+  - DiagnosticName:  clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+    DiagnosticMessage:
+      Message:         'Call to function ''scanf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''scanf_s'' in case of C11'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+      FileOffset:      471
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+          FileOffset:      471
+          Length:          5
+    Notes:
+      - Message:         'Call to function ''scanf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''scanf_s'' in case of C11'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+        FileOffset:      471
+        Replacements:    []
+        Ranges:
+          - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c'
+            FileOffset:      471
+            Length:          5
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6'
+...

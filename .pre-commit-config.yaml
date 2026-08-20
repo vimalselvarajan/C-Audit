@@ -1,0 +1,90 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.2
+    hooks:
+      - id: ruff
+        args: [--fix]
+        exclude: ^audit-targets/
+      - id: ruff-format
+        exclude: ^audit-targets/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(audit-targets/|inspiration_repos/|tests/fixtures/encoding/)
+      - id: end-of-file-fixer
+        exclude: ^(audit-targets/|inspiration_repos/|tests/fixtures/encoding/)
+      - id: check-json
+        exclude: ^(audit-targets/|inspiration_repos/|tests/fixtures/compdb/truncated\.json$)
+      - id: check-yaml
+        exclude: ^(audit-targets/|inspiration_repos/)
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=256]
+
+  - repo: local
+    hooks:
+      # Generated output must never enter the index. 1008 such files were
+      # committed before 2026-08-14 -- `make clean` then deleted tracked files
+      # and every `caudit scan` rewrote a tracked timestamp. .gitignore covers
+      # the normal path; these catch `git add -f` and anything already tracked.
+      - id: no-generated-artifacts
+        name: generated output must not be committed
+        language: fail
+        entry: >-
+          This path is generated output and must not be tracked (see .gitignore).
+          If it is already in the index, run: git rm --cached <path>
+        files: '(^|/)__pycache__/|\.py[cod]$|^\.coverage|^caudit-(report|eval|pairs|ablation|calibration)/|^\.(pytest|mypy|ruff)_cache/|^\.hypothesis/|^htmlcov/'
+
+      - id: no-nested-repos
+        name: nested repositories must stay out of the index
+        language: fail
+        entry: >-
+          inspiration_repos/ and audit-targets/ hold independent repositories
+          with their own .git metadata and must never be tracked (CLAUDE.md).
+          Tracking them as gitlinks breaks `git submodule status`.
+          Run: git rm --cached <path>
+        files: '^(audit-targets/|inspiration_repos/)'
+
+      # A separate hook rather than another alternative in the regex above:
+      # that hook's message says "this path is generated output", which is the
+      # wrong thing to tell someone who just staged a live credential.
+      - id: no-committed-secrets
+        name: .env must not be committed
+        language: fail
+        entry: >-
+          .env holds the Gemini API key and must never be tracked. Committing
+          it publishes the key to everyone with repository access and to every
+          later clone, so treat one that got this far as compromised and rotate
+          it. Run: git rm --cached .env  (the file stays on disk).
+          The committed template is .env.example.
+        files: '^\.env$'
+
+      - id: mypy
+        name: mypy --strict
+        entry: .venv/bin/mypy
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      - id: schema-drift
+        name: JSON Schema export is current
+        entry: .venv/bin/python tools/export_schemas.py --check
+        language: system
+        pass_filenames: false
+        files: ^(src/caudit/model/|schemas/)
+
+      - id: docs-contract
+        name: canonical docs and internal Markdown links
+        entry: .venv/bin/python tools/check_docs.py
+        language: system
+        pass_filenames: false
+        files: ^(README\.md|CLAUDE\.md|my_docs/)
+
+      - id: import-layers
+        name: import-layer contracts
+        entry: .venv/bin/lint-imports
+        language: system
+        pass_filenames: false
+        files: ^src/caudit/

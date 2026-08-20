@@ -1,0 +1,3 @@
+src/logline.c:11:12: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+src/logline.c:11:12: note: treat the string as an argument to avoid this
+1 warning generated.

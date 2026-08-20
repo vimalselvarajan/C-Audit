@@ -1,0 +1,251 @@
+{
+  "$id": "https://caudit.dev/schemas/adjudication-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "The model's proposal. Not a :class:`Finding` until part 11 accepts it.",
+  "properties": {
+    "asserted_call_edges": {
+      "items": {
+        "description": "\"``caller`` calls ``callee``\" — checked against the index's call graph.\n\nSeparate from :attr:`Adjudication.cited_evidence_ids` because an edge is\nnot a region: two functions can both be cited, both resolve, and have no\ncall between them. That is precisely the claim a reachability argument\nrests on and the one a region citation cannot express.",
+        "properties": {
+          "callee": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "caller": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "caller",
+          "callee"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "cited_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "confidence_self_report": {
+      "description": "From the spec's finding contract. ``review_required`` is not a score.",
+      "enum": [
+        "high",
+        "medium",
+        "review_required"
+      ],
+      "type": "string"
+    },
+    "cwe": {
+      "nullable": true,
+      "pattern": "^CWE-\\d{1,5}$",
+      "type": "string"
+    },
+    "cwe_rationale": {
+      "type": "string"
+    },
+    "exploitability": {
+      "description": "Whether an attacker can drive it — never inferred from impact.",
+      "enum": [
+        "unknown",
+        "unlikely",
+        "plausible",
+        "demonstrated"
+      ],
+      "type": "string"
+    },
+    "impact": {
+      "description": "What can happen — deliberately silent about whether it can be reached.",
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence_supports": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "description": "What can happen if the defect is triggered.",
+          "enum": [
+            "memory_corruption",
+            "information_disclosure",
+            "denial_of_service",
+            "code_execution",
+            "undefined_behavior",
+            "resource_exhaustion",
+            "incorrect_result"
+          ],
+          "type": "string"
+        },
+        "severity": {
+          "description": "Weakness severity in isolation, before reachability is considered.",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "severity",
+        "description",
+        "evidence_supports"
+      ],
+      "type": "object"
+    },
+    "maintainability_impact": {
+      "description": "How the recommendation lands on the code that has to live with it.",
+      "properties": {
+        "complexity": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "coupling": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "effort": {
+          "description": "Weakness severity in isolation, before reachability is considered.",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "type": "string"
+        },
+        "ownership": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "regression_risk": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "ownership",
+        "complexity",
+        "coupling",
+        "regression_risk"
+      ],
+      "type": "object"
+    },
+    "quoted_evidence": {
+      "items": {
+        "description": "Text the model says appears at a region it was issued.\n\nThe only claim *about source* that a machine can settle exactly: the bytes\neither match or they do not. Prose describing code is not checkable and is\nnever treated as though it were, which is why quoting is a field rather\nthan something read back out of a rationale.\n\nPart 11 compares this against the captured bytes with no normalisation at\nall — not whitespace, not line endings. A quotation that has been tidied up\nis a quotation of something the compiler never saw.",
+        "properties": {
+          "evidence_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "text"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "reachability": {
+      "description": "Whether the defect can be reached — argued separately from impact.",
+      "enum": [
+        "unknown",
+        "argued",
+        "demonstrated"
+      ],
+      "type": "string"
+    },
+    "remediation": {
+      "description": "A fix strategy. The MVP recommends; it does not modify code.",
+      "properties": {
+        "example": {
+          "nullable": true,
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "references": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "strategy": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy",
+        "rationale"
+      ],
+      "type": "object"
+    },
+    "trigger_conditions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "unresolved_assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "verdict": {
+      "description": "The model's proposed disposition. Never the final state.",
+      "enum": [
+        "confirmed",
+        "rejected",
+        "review_required"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "verdict",
+    "cited_evidence_ids",
+    "cwe",
+    "cwe_rationale",
+    "trigger_conditions",
+    "impact",
+    "reachability",
+    "exploitability",
+    "remediation",
+    "maintainability_impact",
+    "unresolved_assumptions",
+    "confidence_self_report"
+  ],
+  "type": "object",
+  "x-caudit-response-schema": "adjudication",
+  "x-caudit-schema-version": "1.7.0",
+  "x-caudit-transforms": [
+    "$ref/$defs are inlined at every use; a recursive definition is refused",
+    "'$defs' is removed: inlined at every reference, so no definition block survives",
+    "'$id' is removed: identifies this document; not part of the shape",
+    "'$schema' is removed: identifies the JSON Schema dialect; not part of the shape",
+    "'additionalProperties' is removed: rejected by structured output; unknown keys are refused by the pydantic model instead, which is the check that matters",
+    "'default' is removed: a response schema describes what must be returned, not what to assume when it is not",
+    "'discriminator' is removed: rejected by structured output; the union it tags is inlined",
+    "'title' is removed: pydantic derives it from the class name; it is noise in a prompt",
+    "'x-caudit-schema-version' is removed: our own annotation, carried in the cache key instead",
+    "anyOf with exactly one non-null branch becomes that branch plus nullable=true",
+    "properties are emitted in the order the model declares them"
+  ]
+}

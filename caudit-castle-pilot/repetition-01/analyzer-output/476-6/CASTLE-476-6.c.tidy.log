@@ -1,0 +1,27 @@
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:18:11: warning: function 'fibonacci' is within a recursive call chain [misc-no-recursion]
+   18 | IntAndPtr fibonacci(int a) {
+      |           ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:18:11: note: example recursive call chain, starting from function 'fibonacci'
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:26:16: note: Frame #1: function 'fibonacci' calls function 'fibonacci' here:
+   26 |     return add(fibonacci(a - 2), fibonacci(a - 1));
+      |                ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:26:16: note: ... which was the starting point of the recursive call chain; there may be other cycles
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:32:5: warning: 'scanf' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [cert-err34-c]
+   32 |     scanf("%9d", &input);
+      |     ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:32:5: warning: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+   32 |     scanf("%9d", &input);
+      |     ^~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:32:5: note: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11
+   32 |     scanf("%9d", &input);
+      |     ^~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:35:57: warning: Dereference of null pointer (loaded from field 'p') [clang-analyzer-core.NullDereference]
+   35 |     printf("fibonacci(%d) = %d, %d\n", input, result.a, *result.p);
+      |                                                         ^       ~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:34:5: note: 'result.p' initialized to a null pointer value
+   34 |     IntAndPtr result = fibonacci(input);
+      |     ^~~~~~~~~~~~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/476-6/CASTLE-476-6.c:35:57: note: Dereference of null pointer (loaded from field 'p')
+   35 |     printf("fibonacci(%d) = %d, %d\n", input, result.a, *result.p);
+      |                                                         ^       ~
+2830 warnings generated.

@@ -1,0 +1,14 @@
+[
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/build_table.c",
+    "output": "${CASE_ROOT}/build/build_table.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/build_table.c", "-o", "build/build_table.o"]
+  },
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/parse_length.c",
+    "output": "${CASE_ROOT}/build/parse_length.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/parse_length.c", "-o", "build/parse_length.o"]
+  }
+]

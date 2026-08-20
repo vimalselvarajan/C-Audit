@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/copy_name.c",
+    "output": "${CASE_ROOT}/build/copy_name.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/copy_name.c", "-o", "build/copy_name.o"]
+  }
+]

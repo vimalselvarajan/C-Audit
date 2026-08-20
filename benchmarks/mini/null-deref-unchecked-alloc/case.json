@@ -1,0 +1,16 @@
+{
+  "case_id": "null-deref-unchecked-alloc",
+  "family": "null_uninitialized",
+  "description": "Result of calloc is written through without a null check.",
+  "analyzer_blind_spot": true,
+  "ground_truth": [
+    {
+      "path": "src/config.c",
+      "line": 18,
+      "cwe": "CWE-476",
+      "family": "null_uninitialized",
+      "variant": "vulnerable",
+      "note": "first store through the unchecked calloc result. Predicted to be detectable and measured on 2026-08-15 not to be: clang 18.1.3 reports nothing here, on the curated profile or on a bare 'clang --analyze'. The static analyzer does not split the state on allocation failure unless something else in the function constrains the pointer, so an allocation whose result is never compared to NULL produces no branch to report on. Flagged so the miss is a recorded property of the toolchain rather than an unexplained gap in the score."
+    }
+  ]
+}

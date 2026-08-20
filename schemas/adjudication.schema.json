@@ -1,0 +1,318 @@
+{
+  "$defs": {
+    "CallEdgeClaim": {
+      "additionalProperties": false,
+      "description": "\"``caller`` calls ``callee``\" — checked against the index's call graph.\n\nSeparate from :attr:`Adjudication.cited_evidence_ids` because an edge is\nnot a region: two functions can both be cited, both resolve, and have no\ncall between them. That is precisely the claim a reachability argument\nrests on and the one a region citation cannot express.",
+      "properties": {
+        "callee": {
+          "minLength": 1,
+          "title": "Callee",
+          "type": "string"
+        },
+        "caller": {
+          "minLength": 1,
+          "title": "Caller",
+          "type": "string"
+        }
+      },
+      "required": [
+        "caller",
+        "callee"
+      ],
+      "title": "CallEdgeClaim",
+      "type": "object"
+    },
+    "Confidence": {
+      "description": "From the spec's finding contract. ``review_required`` is not a score.",
+      "enum": [
+        "high",
+        "medium",
+        "review_required"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "Exploitability": {
+      "description": "Whether an attacker can drive it — never inferred from impact.",
+      "enum": [
+        "unknown",
+        "unlikely",
+        "plausible",
+        "demonstrated"
+      ],
+      "title": "Exploitability",
+      "type": "string"
+    },
+    "Impact": {
+      "additionalProperties": false,
+      "description": "What can happen — deliberately silent about whether it can be reached.",
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_supports": {
+          "minLength": 1,
+          "title": "Evidence Supports",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ImpactKind"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "kind",
+        "severity",
+        "description",
+        "evidence_supports"
+      ],
+      "title": "Impact",
+      "type": "object"
+    },
+    "ImpactKind": {
+      "description": "What can happen if the defect is triggered.",
+      "enum": [
+        "memory_corruption",
+        "information_disclosure",
+        "denial_of_service",
+        "code_execution",
+        "undefined_behavior",
+        "resource_exhaustion",
+        "incorrect_result"
+      ],
+      "title": "ImpactKind",
+      "type": "string"
+    },
+    "MaintainabilityImpact": {
+      "additionalProperties": false,
+      "description": "How the recommendation lands on the code that has to live with it.",
+      "properties": {
+        "complexity": {
+          "minLength": 1,
+          "title": "Complexity",
+          "type": "string"
+        },
+        "coupling": {
+          "minLength": 1,
+          "title": "Coupling",
+          "type": "string"
+        },
+        "effort": {
+          "$ref": "#/$defs/Severity",
+          "default": "medium"
+        },
+        "ownership": {
+          "minLength": 1,
+          "title": "Ownership",
+          "type": "string"
+        },
+        "regression_risk": {
+          "minLength": 1,
+          "title": "Regression Risk",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ownership",
+        "complexity",
+        "coupling",
+        "regression_risk"
+      ],
+      "title": "MaintainabilityImpact",
+      "type": "object"
+    },
+    "Quotation": {
+      "additionalProperties": false,
+      "description": "Text the model says appears at a region it was issued.\n\nThe only claim *about source* that a machine can settle exactly: the bytes\neither match or they do not. Prose describing code is not checkable and is\nnever treated as though it were, which is why quoting is a field rather\nthan something read back out of a rationale.\n\nPart 11 compares this against the captured bytes with no normalisation at\nall — not whitespace, not line endings. A quotation that has been tidied up\nis a quotation of something the compiler never saw.",
+      "properties": {
+        "evidence_id": {
+          "minLength": 1,
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "text"
+      ],
+      "title": "Quotation",
+      "type": "object"
+    },
+    "Reachability": {
+      "description": "Whether the defect can be reached — argued separately from impact.",
+      "enum": [
+        "unknown",
+        "argued",
+        "demonstrated"
+      ],
+      "title": "Reachability",
+      "type": "string"
+    },
+    "Remediation": {
+      "additionalProperties": false,
+      "description": "A fix strategy. The MVP recommends; it does not modify code.",
+      "properties": {
+        "example": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Example"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "references": {
+          "items": {
+            "type": "string"
+          },
+          "title": "References",
+          "type": "array"
+        },
+        "strategy": {
+          "minLength": 1,
+          "title": "Strategy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy",
+        "rationale"
+      ],
+      "title": "Remediation",
+      "type": "object"
+    },
+    "Severity": {
+      "description": "Weakness severity in isolation, before reachability is considered.",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Verdict": {
+      "description": "The model's proposed disposition. Never the final state.",
+      "enum": [
+        "confirmed",
+        "rejected",
+        "review_required"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "$id": "https://caudit.dev/schemas/adjudication.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "The model's proposal. Not a :class:`Finding` until part 11 accepts it.",
+  "properties": {
+    "asserted_call_edges": {
+      "items": {
+        "$ref": "#/$defs/CallEdgeClaim"
+      },
+      "title": "Asserted Call Edges",
+      "type": "array"
+    },
+    "cited_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cited Evidence Ids",
+      "type": "array"
+    },
+    "confidence_self_report": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "cwe": {
+      "anyOf": [
+        {
+          "pattern": "^CWE-\\d{1,5}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cwe"
+    },
+    "cwe_rationale": {
+      "title": "Cwe Rationale",
+      "type": "string"
+    },
+    "exploitability": {
+      "$ref": "#/$defs/Exploitability"
+    },
+    "impact": {
+      "$ref": "#/$defs/Impact"
+    },
+    "maintainability_impact": {
+      "$ref": "#/$defs/MaintainabilityImpact"
+    },
+    "quoted_evidence": {
+      "items": {
+        "$ref": "#/$defs/Quotation"
+      },
+      "title": "Quoted Evidence",
+      "type": "array"
+    },
+    "reachability": {
+      "$ref": "#/$defs/Reachability"
+    },
+    "remediation": {
+      "$ref": "#/$defs/Remediation"
+    },
+    "trigger_conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Trigger Conditions",
+      "type": "array"
+    },
+    "unresolved_assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Assumptions",
+      "type": "array"
+    },
+    "verdict": {
+      "$ref": "#/$defs/Verdict"
+    }
+  },
+  "required": [
+    "verdict",
+    "cited_evidence_ids",
+    "cwe",
+    "cwe_rationale",
+    "trigger_conditions",
+    "impact",
+    "reachability",
+    "exploitability",
+    "remediation",
+    "maintainability_impact",
+    "unresolved_assumptions",
+    "confidence_self_report"
+  ],
+  "title": "Adjudication",
+  "type": "object",
+  "x-caudit-schema-version": "1.7.0"
+}

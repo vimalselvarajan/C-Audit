@@ -1,0 +1,13 @@
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c:5:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [clang-diagnostic-sign-conversion]
+    5 |     int* buffer = (int*) malloc(size * sizeof(int));
+      |                                 ^~~~ ~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c:25:5: warning: 'scanf' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [cert-err34-c]
+   25 |     scanf("%9d", &size);
+      |     ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c:25:5: warning: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+   25 |     scanf("%9d", &size);
+      |     ^~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c:25:5: note: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11
+   25 |     scanf("%9d", &size);
+      |     ^~~~~
+2829 warnings generated.

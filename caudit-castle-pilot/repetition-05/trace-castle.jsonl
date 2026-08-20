@@ -1,0 +1,21 @@
+{"event": "run_started", "policy_version": "1", "run_id": "50c62ac7ad1e", "tool_versions": {}}
+{"analyzer_blind_spot": false, "candidates": 0, "case_id": "125-7", "confirmed": 0, "event": "case_scored", "findings": 0, "lines_of_code": 24, "policy_version": "1", "review_required": 0, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 1, "case_id": "134-9", "confirmed": 0, "event": "case_scored", "findings": 1, "lines_of_code": 9, "policy_version": "1", "review_required": 1, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 0, "case_id": "190-3", "confirmed": 0, "event": "case_scored", "findings": 0, "lines_of_code": 7, "policy_version": "1", "review_required": 0, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 1, "case_id": "369-6", "confirmed": 0, "event": "case_scored", "findings": 1, "lines_of_code": 19, "policy_version": "1", "review_required": 1, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 1, "case_id": "401-9", "confirmed": 0, "event": "case_scored", "findings": 1, "lines_of_code": 33, "policy_version": "1", "review_required": 1, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 3, "case_id": "415-6", "confirmed": 1, "event": "case_scored", "findings": 3, "lines_of_code": 28, "policy_version": "1", "review_required": 2, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 0, "case_id": "416-7", "confirmed": 0, "event": "case_scored", "findings": 0, "lines_of_code": 34, "policy_version": "1", "review_required": 0, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 4, "case_id": "476-6", "confirmed": 1, "event": "case_scored", "findings": 4, "lines_of_code": 29, "policy_version": "1", "review_required": 3, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 0, "case_id": "761-9", "confirmed": 0, "event": "case_scored", "findings": 0, "lines_of_code": 26, "policy_version": "1", "review_required": 0, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 6, "case_id": "78-8", "confirmed": 1, "event": "case_scored", "findings": 6, "lines_of_code": 32, "policy_version": "1", "review_required": 5, "run_id": "50c62ac7ad1e"}
+{"analyzer_blind_spot": false, "candidates": 0, "case_id": "787-10", "confirmed": 0, "event": "case_scored", "findings": 0, "lines_of_code": 14, "policy_version": "1", "review_required": 0, "run_id": "50c62ac7ad1e"}
+{"citation_resolution_rate": 1.0, "confirmed_count": 3, "event": "metrics", "evidence_validity_rate": 1.0, "fp_per_kloc": 7.8431372549019605, "macro_f2": 0.25, "policy_version": "1", "precision": 0.3333333333333333, "recall": 0.25, "review_required_count": 13, "run_id": "50c62ac7ad1e"}
+{"event": "gate", "name": "citation_resolution", "observed": 1.0, "passed": true, "policy_version": "1", "run_id": "50c62ac7ad1e", "threshold": 0.95}
+{"event": "gate", "name": "zero_fabrication", "observed": 0, "passed": true, "policy_version": "1", "run_id": "50c62ac7ad1e", "threshold": 0}
+{"event": "gate", "name": "counts_separate", "observed": 0, "passed": true, "policy_version": "1", "run_id": "50c62ac7ad1e", "threshold": 0}
+{"event": "gate", "name": "baseline_floor", "observed": 0.25, "passed": true, "policy_version": "1", "run_id": "50c62ac7ad1e", "threshold": 0}
+{"event": "gate", "name": "precision_improvement", "observed": 0.333333, "passed": true, "policy_version": "1", "run_id": "50c62ac7ad1e", "threshold": 0.333333}
+{"event": "gate", "name": "recall_non_inferiority", "observed": 0.25, "passed": true, "policy_version": "1", "run_id": "50c62ac7ad1e", "threshold": 0.25}
+{"event": "tool_versions_final", "policy_version": "1", "run_id": "50c62ac7ad1e", "tool_versions": {"clang": "18.1.3", "clang-static-analyzer": "18.1.3", "clang-tidy": "18.1.3"}}
+{"event": "run_finished", "ok": true, "policy_version": "1", "run_id": "50c62ac7ad1e"}

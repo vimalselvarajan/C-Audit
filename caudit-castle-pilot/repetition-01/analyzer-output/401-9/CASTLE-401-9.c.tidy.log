@@ -1,0 +1,5 @@
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/401-9/CASTLE-401-9.c:4:17: warning: pointer parameter 'a' can be pointer to const [readability-non-const-parameter]
+    4 | int square(int* a) {
+      |                 ^
+      |            const 
+2827 warnings generated.

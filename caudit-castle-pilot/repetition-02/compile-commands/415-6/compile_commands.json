@@ -1,0 +1,13 @@
+[
+  {
+    "directory": "/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6",
+    "file": "/home/vimdim/.cache/caudit/benchmarks/castle-workspace/415-6/CASTLE-415-6.c",
+    "arguments": [
+      "clang",
+      "-c",
+      "CASTLE-415-6.c",
+      "-o",
+      "CASTLE-415-6.o"
+    ]
+  }
+]

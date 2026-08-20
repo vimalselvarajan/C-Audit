@@ -1,0 +1,14 @@
+{
+  "description": "Triage dismisses the candidate. It stays in the report on the analyzer's word.",
+  "name": "triage-dismisses",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "text": "{\n  \"disposition\": \"dismiss\",\n  \"ambiguous\": false,\n  \"impact\": {\n    \"kind\": \"incorrect_result\",\n    \"severity\": \"low\",\n    \"description\": \"None: the bound is present on this page.\",\n    \"evidence_supports\": \"The length is compared against the buffer size before the copy.\"\n  },\n  \"rationale\": \"The analyzer missed the check two lines above.\"\n}",
+      "usage": {
+        "input_tokens": 900,
+        "output_tokens": 60
+      }
+    }
+  ]
+}

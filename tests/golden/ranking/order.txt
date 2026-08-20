@@ -1,0 +1,10 @@
+ 1. CWE-787 — severity high (from the out_of_bounds family, capped at what memory_corruption can do) · confidence high · reachability demonstrated · 2 independent analyzers agree · local fix
+ 2. CWE-787 — severity high (from the out_of_bounds family, capped at what memory_corruption can do) · confidence high · reachability demonstrated · reported by one analyzer · local fix
+ 3. CWE-416 — severity high (from the memory_lifetime family, capped at what memory_corruption can do) · confidence high · reachability argued · reported by one analyzer · local fix
+ 4. CWE-134 — severity high (from the injection family, capped at what code_execution can do) · confidence high · reachability argued · reported by one analyzer · local fix
+ 5. CWE-415 — severity high (from the memory_lifetime family, capped at what memory_corruption can do) · confidence medium · reachability argued · reported by one analyzer · local fix
+ 6. CWE-125 — severity high (from the out_of_bounds family, capped at what information_disclosure can do) · confidence medium · reachability argued · reported by one analyzer · local fix
+ 7. CWE-476 — severity medium (from the null_uninitialized family, capped at what undefined_behavior can do) · confidence high · reachability demonstrated · reported by one analyzer · local fix
+ 8. CWE-457 — severity medium (from the null_uninitialized family, capped at what undefined_behavior can do) · confidence high · reachability unknown · reported by one analyzer · local fix
+ 9. CWE-772 — severity medium (from the resource_leak family, capped at what resource_exhaustion can do) · confidence medium · reachability unknown · reported by one analyzer · local fix
+10. CWE-190 — severity low (from the integer family, capped at what incorrect_result can do) · confidence high · reachability argued · reported by one analyzer · local fix

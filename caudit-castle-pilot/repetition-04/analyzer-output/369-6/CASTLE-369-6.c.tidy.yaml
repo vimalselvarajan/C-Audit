@@ -1,0 +1,25 @@
+---
+MainSourceFile:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c'
+Diagnostics:
+  - DiagnosticName:  misc-no-recursion
+    DiagnosticMessage:
+      Message:         'function ''fibonacci'' is within a recursive call chain'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c'
+      FileOffset:      24
+      Replacements:    []
+    Notes:
+      - Message:         'example recursive call chain, starting from function ''fibonacci'''
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c'
+        FileOffset:      24
+        Replacements:    []
+      - Message:         'Frame #1: function ''fibonacci'' calls function ''fibonacci'' here:'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c'
+        FileOffset:      148
+        Replacements:    []
+      - Message:         '... which was the starting point of the recursive call chain; there may be other cycles'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c'
+        FileOffset:      148
+        Replacements:    []
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6'
+...

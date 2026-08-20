@@ -1,0 +1,19 @@
+{
+  "description": "Nothing but timeouts. The run completes and the candidate needs review.",
+  "name": "provider-timeout",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "detail": "provider call failed: read timed out",
+      "fails": "unavailable"
+    },
+    {
+      "detail": "provider call failed: read timed out",
+      "fails": "unavailable"
+    },
+    {
+      "detail": "provider call failed: read timed out",
+      "fails": "unavailable"
+    }
+  ]
+}

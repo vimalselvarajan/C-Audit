@@ -1,0 +1,16 @@
+{
+  "case_id": "format-string-user-input",
+  "family": "injection",
+  "description": "printf called with a caller-supplied string as its format.",
+  "analyzer_blind_spot": false,
+  "ground_truth": [
+    {
+      "path": "src/logline.c",
+      "line": 11,
+      "cwe": "CWE-134",
+      "family": "injection",
+      "variant": "vulnerable",
+      "note": "printf(user_text) with argv[1] reaching it from main"
+    }
+  ]
+}

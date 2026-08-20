@@ -1,0 +1,9 @@
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c:3:5: warning: function 'fibonacci' is within a recursive call chain [misc-no-recursion]
+    3 | int fibonacci(int n) {
+      |     ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c:3:5: note: example recursive call chain, starting from function 'fibonacci'
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c:10:12: note: Frame #1: function 'fibonacci' calls function 'fibonacci' here:
+   10 |     return fibonacci(n - 1) + fibonacci(n - 2);
+      |            ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/369-6/CASTLE-369-6.c:10:12: note: ... which was the starting point of the recursive call chain; there may be other cycles
+1606 warnings generated.

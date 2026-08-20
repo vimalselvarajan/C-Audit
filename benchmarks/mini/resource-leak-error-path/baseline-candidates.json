@@ -1,0 +1,31 @@
+{
+  "source": "captured",
+  "needs_recapture": false,
+  "note": "Captured from a real toolchain by tools/record_baseline.py. Regenerate after changing the fixture or the check profile.",
+  "diagnostics": [
+    {
+      "path": "src/loader.c",
+      "line": 21,
+      "end_line": 21,
+      "message": "Call to function 'memset' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'memset_s' in case of C11",
+      "rule_id": "clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling",
+      "tool_name": "clang-tidy",
+      "tool_version": "18.1.3",
+      "producer": "clang_tidy",
+      "cwe": []
+    },
+    {
+      "path": "src/loader.c",
+      "line": 27,
+      "end_line": 27,
+      "message": "Opened stream never closed. Potential resource leak",
+      "rule_id": "alpha.unix.Stream",
+      "tool_name": "clang-static-analyzer",
+      "tool_version": "18.1.3",
+      "producer": "csa",
+      "cwe": [
+        "CWE-775"
+      ]
+    }
+  ]
+}

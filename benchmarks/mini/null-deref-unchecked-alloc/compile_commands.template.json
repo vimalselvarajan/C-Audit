@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/config.c",
+    "output": "${CASE_ROOT}/build/config.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/config.c", "-o", "build/config.o"]
+  }
+]

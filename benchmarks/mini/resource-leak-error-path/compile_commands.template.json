@@ -1,0 +1,14 @@
+[
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/loader.c",
+    "output": "${CASE_ROOT}/build/loader.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/loader.c", "-o", "build/loader.o"]
+  },
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/policy.c",
+    "output": "${CASE_ROOT}/build/policy.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/policy.c", "-o", "build/policy.o"]
+  }
+]

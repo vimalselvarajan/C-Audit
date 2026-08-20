@@ -1,0 +1,28 @@
+{
+  "description": "Never valid. The candidate must end as review_required with no partial finding.",
+  "name": "adjudication-malformed-always",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "text": "{\"verdict\": \"confirmed\"",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    },
+    {
+      "text": "{\"verdict\": \"confirmed\"",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    },
+    {
+      "text": "{\"verdict\": \"confirmed\"",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    }
+  ]
+}

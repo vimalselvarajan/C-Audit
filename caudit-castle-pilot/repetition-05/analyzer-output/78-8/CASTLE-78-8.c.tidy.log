@@ -1,0 +1,43 @@
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:10:14: warning: unused parameter 'argc' [clang-diagnostic-unused-parameter]
+   10 | int main(int argc, char *argv[])
+      |              ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:10:26: warning: unused parameter 'argv' [clang-diagnostic-unused-parameter]
+   10 | int main(int argc, char *argv[])
+      |                          ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:17:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   17 |         strcpy(sys, cmd);
+      |         ^~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:17:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   17 |         strcpy(sys, cmd);
+      |         ^~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:18:9: warning: Call to function 'strcat' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcat'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   18 |         strcat(sys, buff);
+      |         ^~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:18:9: note: Call to function 'strcat' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcat'. CWE-119
+   18 |         strcat(sys, buff);
+      |         ^~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:20:18: warning: declaration shadows a local variable [clang-diagnostic-shadow]
+   20 |         for (int i = 0; i < strlen(sys); i++)
+      |                  ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:12:14: note: previous declaration is here
+   12 |     unsigned i;
+      |              ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:20:27: warning: comparison of integers of different signs: 'int' and 'unsigned long' [clang-diagnostic-sign-compare]
+   20 |         for (int i = 0; i < strlen(sys); i++)
+      |                         ~ ^ ~~~~~~~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:24:17: warning: Call to function 'fprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'fprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+   24 |                 fprintf(stderr, "illegal character in input");
+      |                 ^~~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:24:17: note: Call to function 'fprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'fprintf_s' in case of C11
+   24 |                 fprintf(stderr, "illegal character in input");
+      |                 ^~~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:31:17: warning: calling 'system' uses a command processor [cert-env33-c]
+   31 |             if (system(sys) < 0)
+      |                 ^
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:32:17: warning: Call to function 'fprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'fprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+   32 |                 fprintf(stderr, "system() failed");
+      |                 ^~~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/78-8/CASTLE-78-8.c:32:17: note: Call to function 'fprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'fprintf_s' in case of C11
+   32 |                 fprintf(stderr, "system() failed");
+      |                 ^~~~~~~
+3488 warnings generated.

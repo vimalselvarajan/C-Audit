@@ -1,0 +1,68 @@
+# Vulnerable/fixed repository pairs (part 13).
+#
+# Every pair is pinned by full SHA and carries the build recipe that produces
+# a working compilation database. A pair whose build cannot be reproduced is
+# moved to `excluded` with a reason — never deleted, because a corpus that
+# quietly loses its hard cases reports a rising score for a falling tool.
+#
+# Each entry here has been cloned, checked out and configured on a real
+# machine; the recipe below is the one that ran, not one that ought to work.
+# See README.md for the procedure.
+
+version: "1"
+
+pairs:
+  - pair_id: libarchive-cve-2024-20696
+    repo_url: https://github.com/libarchive/libarchive
+    vulnerable_rev: 576a24205050a0ce5f8209f13bc1d94912797883
+    fixed_rev: eac15e252010c1189a5c0f461364dbe2cd2a68b1
+    cve: CVE-2024-20696
+    cwe: CWE-787
+    pair_set: development
+    affected_paths:
+      - libarchive/archive_read_support_format_rar.c
+    # Derived from `git diff <fixed> <vulnerable>`, then read against the diff
+    # and corrected. The derivation offered twelve lines; seven are kept.
+    #
+    #   2063, 2216  the two call sites, each truncating a size_t to int
+    #   3097        the `int length` parameter — the root cause
+    #   3102        the first statement of the body, where the fix inserted the
+    #               missing `length > unp_buffer_size` check (a pure-insertion
+    #               hunk has no removed line to point at, so the rule takes the
+    #               line the check would have guarded)
+    #   3113, 3116, 3123  the three comparisons that mishandle a length which
+    #               has already gone negative
+    #
+    # Dropped, and why:
+    #   435         the forward declaration carries the same `int` type, but no
+    #               analyzer or model reports a memory-safety defect *at* a
+    #               prototype. Keeping it would add a line nothing can find to
+    #               the denominator of every variant equally.
+    #   3133-3135   `archive_set_error` / `return ARCHIVE_FATAL`, which the fix
+    #               relocated into a `fatal:` label. Restructuring churn that
+    #               the diff cannot distinguish from the defect, but a reader
+    #               can.
+    #   3143        the function's closing brace, where the fix appended that
+    #               `fatal:` label. This is the insertion-point rule reaching
+    #               its limit: a fix that appends to the *end* of a function
+    #               makes "the line the check would have guarded" the `}`,
+    #               which is decisive for nothing. Exactly the case hand
+    #               confirmation exists for.
+    truth_lines:
+      libarchive/archive_read_support_format_rar.c: [2063, 2216, 3097, 3102, 3113, 3116, 3123]
+    build_recipe:
+      steps:
+        - cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_C_COMPILER=clang
+      compile_commands: build/compile_commands.json
+      requires: [cmake, clang]
+    note: >-
+      copy_from_lzss_window_to_unp took an int length where both callers held a
+      size_t. A crafted lzss opcode chain produces a negative length, which
+      memcpy reads as a very large positive one. Chosen as the first pinned
+      pair because the decisive lines span more than a thousand lines of one
+      3816-line file: the call sites are around 2063 and 2216 and the defective
+      callee is at 3097, so an 81-line flat window cannot hold both ends of the
+      chain no matter where it is centred. That is the regime the mini suite
+      cannot reach, and the reason its ablation tie was an artefact.
+
+excluded: []

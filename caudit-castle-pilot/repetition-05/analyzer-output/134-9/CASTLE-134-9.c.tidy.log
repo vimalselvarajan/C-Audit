@@ -1,0 +1,7 @@
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c:6:9: warning: Call to function 'snprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'snprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+    6 |         snprintf(buffer, sizeof(buffer), "%s", argv[1]);
+      |         ^~~~~~~~
+/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c:6:9: note: Call to function 'snprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'snprintf_s' in case of C11
+    6 |         snprintf(buffer, sizeof(buffer), "%s", argv[1]);
+      |         ^~~~~~~~
+1606 warnings generated.

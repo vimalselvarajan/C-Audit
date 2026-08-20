@@ -1,0 +1,5 @@
+src/main.c:5:12: warning: format string is not a string literal (potentially insecure) [-Wformat-security]
+src/main.c:5:5: note: treat the string as an argument to avoid this
+src/main.c:5:5: error: call to undeclared function 'strcpy' [-Wimplicit-function-declaration]
+/usr/include/string.h:141:12: warning: this diagnostic is in a system header [-Wshadow]
+2 warnings and 1 error generated.

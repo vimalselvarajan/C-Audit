@@ -1,0 +1,87 @@
+{
+  "$id": "https://caudit.dev/schemas/triage-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "The triage tier's answer, and the input to :func:`~caudit.llm.provider.route`.\n\n``ambiguous`` and ``impact`` are separate from ``disposition`` because the\nrouting truth table is over those two alone. Reusing this type for the\nadjudication tier's answer — see :meth:`from_verdict` — is what keeps the\nescalation rule a single table rather than two rules that can drift.",
+  "properties": {
+    "ambiguous": {
+      "type": "boolean"
+    },
+    "disposition": {
+      "description": "What the cheap tier thinks should happen next.",
+      "enum": [
+        "dismiss",
+        "adjudicate"
+      ],
+      "type": "string"
+    },
+    "impact": {
+      "description": "What can happen — deliberately silent about whether it can be reached.",
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence_supports": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "description": "What can happen if the defect is triggered.",
+          "enum": [
+            "memory_corruption",
+            "information_disclosure",
+            "denial_of_service",
+            "code_execution",
+            "undefined_behavior",
+            "resource_exhaustion",
+            "incorrect_result"
+          ],
+          "type": "string"
+        },
+        "severity": {
+          "description": "Weakness severity in isolation, before reachability is considered.",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "severity",
+        "description",
+        "evidence_supports"
+      ],
+      "type": "object"
+    },
+    "rationale": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition",
+    "ambiguous",
+    "impact",
+    "rationale"
+  ],
+  "type": "object",
+  "x-caudit-response-schema": "triage",
+  "x-caudit-schema-version": "1.7.0",
+  "x-caudit-transforms": [
+    "$ref/$defs are inlined at every use; a recursive definition is refused",
+    "'$defs' is removed: inlined at every reference, so no definition block survives",
+    "'$id' is removed: identifies this document; not part of the shape",
+    "'$schema' is removed: identifies the JSON Schema dialect; not part of the shape",
+    "'additionalProperties' is removed: rejected by structured output; unknown keys are refused by the pydantic model instead, which is the check that matters",
+    "'default' is removed: a response schema describes what must be returned, not what to assume when it is not",
+    "'discriminator' is removed: rejected by structured output; the union it tags is inlined",
+    "'title' is removed: pydantic derives it from the class name; it is noise in a prompt",
+    "'x-caudit-schema-version' is removed: our own annotation, carried in the cache key instead",
+    "anyOf with exactly one non-null branch becomes that branch plus nullable=true",
+    "properties are emitted in the order the model declares them"
+  ]
+}

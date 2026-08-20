@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "clang",
+          "fullName": "clang static analyzer",
+          "version": "18.1.8",
+          "rules": [
+            {
+              "id": "unix.Malloc",
+              "name": "unix.Malloc",
+              "shortDescription": { "text": "Use of memory after it is freed" }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "unix.Malloc",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": { "text": "Use of memory after it is freed" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/main.c" },
+                "region": { "startLine": 5, "startColumn": 5 }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": { "text": "Memory is allocated" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/main.c" },
+                          "region": { "startLine": 1, "startColumn": 1 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "message": { "text": "Assuming the allocation succeeded" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/main.c" },
+                          "region": { "startLine": 3, "startColumn": 1 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "message": { "text": "Memory is released" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/main.c" },
+                          "region": { "startLine": 4, "startColumn": 1 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "message": { "text": "Use of memory after it is freed" },
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/main.c" },
+                          "region": { "startLine": 5, "startColumn": 5 }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "EvidenceKind": {
+      "description": "What role a region plays in an argument.",
+      "enum": [
+        "primary_code",
+        "supporting_code",
+        "type_decl",
+        "macro_def",
+        "call_edge",
+        "analyzer_diagnostic",
+        "control_flow_step"
+      ],
+      "title": "EvidenceKind",
+      "type": "string"
+    },
+    "Producer": {
+      "description": "What kind of component produced a fact.",
+      "enum": [
+        "clang_diagnostic",
+        "csa",
+        "clang_tidy",
+        "index",
+        "llm",
+        "fixture"
+      ],
+      "title": "Producer",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Which analyzer, compiler fact, or retrieval step produced a fact.",
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "producer": {
+          "$ref": "#/$defs/Producer"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        },
+        "tool_name": {
+          "minLength": 1,
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "minLength": 1,
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "producer",
+        "tool_name",
+        "tool_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "SourceRegion": {
+      "additionalProperties": false,
+      "description": "A byte- and line-addressed span of one file, with its content hash.\n\nBoth addressings are stored so a mismatch between them is detectable:\nlines are 1-based inclusive on both ends (matching Clang and SARIF),\nbytes are half-open ``[start_byte, end_byte)``.",
+      "properties": {
+        "end_byte": {
+          "minimum": 0,
+          "title": "End Byte",
+          "type": "integer"
+        },
+        "end_line": {
+          "minimum": 1,
+          "title": "End Line",
+          "type": "integer"
+        },
+        "path": {
+          "format": "path",
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "start_byte": {
+          "minimum": 0,
+          "title": "Start Byte",
+          "type": "integer"
+        },
+        "start_line": {
+          "minimum": 1,
+          "title": "Start Line",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "start_line",
+        "end_line",
+        "start_byte",
+        "end_byte",
+        "sha256"
+      ],
+      "title": "SourceRegion",
+      "type": "object"
+    },
+    "Symbol": {
+      "additionalProperties": false,
+      "description": "A named program entity a finding can be attached to.",
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "qualified_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Qualified Name"
+        },
+        "usr": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Usr"
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "Symbol",
+      "type": "object"
+    }
+  },
+  "$id": "https://caudit.dev/schemas/evidence-item.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One citable region. The ``evidence_id`` is content-addressed.",
+  "properties": {
+    "evidence_id": {
+      "minLength": 1,
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/EvidenceKind"
+    },
+    "provenance": {
+      "items": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "minItems": 1,
+      "title": "Provenance",
+      "type": "array"
+    },
+    "region": {
+      "$ref": "#/$defs/SourceRegion"
+    },
+    "symbol": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Symbol"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "evidence_id",
+    "kind",
+    "region",
+    "provenance"
+  ],
+  "title": "EvidenceItem",
+  "type": "object",
+  "x-caudit-schema-version": "1.7.0"
+}

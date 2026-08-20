@@ -1,0 +1,15 @@
+---
+MainSourceFile: 'src/copy_name.c'
+Diagnostics:
+  - DiagnosticName:    clang-analyzer-security.insecureAPI.strcpy
+    DiagnosticMessage:
+      Message:         "Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer"
+      FilePath:        'src/copy_name.c'
+      FileOffset:      ${OFFSET:src/copy_name.c:17}
+      Replacements:    []
+    Notes:
+      - Message:    "destination 'slot' is declared here with 16 bytes"
+        FilePath:   'src/copy_name.c'
+        FileOffset: ${OFFSET:src/copy_name.c:11}
+    Level:           Warning
+...

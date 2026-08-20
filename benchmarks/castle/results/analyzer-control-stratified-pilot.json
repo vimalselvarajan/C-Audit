@@ -1,0 +1,89 @@
+{
+  "candidate_identity_stable": true,
+  "case_ids": [
+    "125-7",
+    "134-9",
+    "190-3",
+    "369-6",
+    "401-9",
+    "415-6",
+    "416-7",
+    "476-6",
+    "761-9",
+    "78-8",
+    "787-10"
+  ],
+  "cold_repetition_definition": "real analyzer candidate generation runs again into a fresh output directory; no model or response cache participates",
+  "condition": "attribution_a0",
+  "condition_order": [
+    "A0"
+  ],
+  "corpus_identity_stable": true,
+  "inference": "This establishes harness repeatability only. It contains no model calls and must not be used to estimate Gemini variance or an enhancement effect.",
+  "model_cache": "not applicable; analyzer-only",
+  "repetitions": [
+    {
+      "candidate_set_hash": "8e2fac2499e9eab4c12b57f47517d1330a16aa612e31b02c9d5b27cbd52bdec8",
+      "corpus_hash": "a4bbc2828184134eba83faf634cc984085e4c1aa86872f184cffa86e2be0a170",
+      "failure": "",
+      "macro_f2": 0.25,
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "repetition": 1,
+      "report": "repetition-01/metrics-castle.json",
+      "status": "completed"
+    },
+    {
+      "candidate_set_hash": "8e2fac2499e9eab4c12b57f47517d1330a16aa612e31b02c9d5b27cbd52bdec8",
+      "corpus_hash": "a4bbc2828184134eba83faf634cc984085e4c1aa86872f184cffa86e2be0a170",
+      "failure": "",
+      "macro_f2": 0.25,
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "repetition": 2,
+      "report": "repetition-02/metrics-castle.json",
+      "status": "completed"
+    },
+    {
+      "candidate_set_hash": "8e2fac2499e9eab4c12b57f47517d1330a16aa612e31b02c9d5b27cbd52bdec8",
+      "corpus_hash": "a4bbc2828184134eba83faf634cc984085e4c1aa86872f184cffa86e2be0a170",
+      "failure": "",
+      "macro_f2": 0.25,
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "repetition": 3,
+      "report": "repetition-03/metrics-castle.json",
+      "status": "completed"
+    },
+    {
+      "candidate_set_hash": "8e2fac2499e9eab4c12b57f47517d1330a16aa612e31b02c9d5b27cbd52bdec8",
+      "corpus_hash": "a4bbc2828184134eba83faf634cc984085e4c1aa86872f184cffa86e2be0a170",
+      "failure": "",
+      "macro_f2": 0.25,
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "repetition": 4,
+      "report": "repetition-04/metrics-castle.json",
+      "status": "completed"
+    },
+    {
+      "candidate_set_hash": "8e2fac2499e9eab4c12b57f47517d1330a16aa612e31b02c9d5b27cbd52bdec8",
+      "corpus_hash": "a4bbc2828184134eba83faf634cc984085e4c1aa86872f184cffa86e2be0a170",
+      "failure": "",
+      "macro_f2": 0.25,
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "repetition": 5,
+      "report": "repetition-05/metrics-castle.json",
+      "status": "completed"
+    }
+  ],
+  "requested_repetitions": 5,
+  "result_stable": true,
+  "schema_version": "1",
+  "scope": "claimed-scope stratified development pilot",
+  "selection_algorithm": "group in-scope case ids by CWE prefix; sort groups and members; Python MT19937 choice of one member per group",
+  "selection_seed": 20260820,
+  "stopping_rule": "exactly 5 repetitions; failures do not extend the run",
+  "suite": "castle"
+}

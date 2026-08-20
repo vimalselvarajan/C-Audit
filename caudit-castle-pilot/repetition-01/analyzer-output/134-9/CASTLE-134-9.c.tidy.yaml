@@ -1,0 +1,25 @@
+---
+MainSourceFile:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c'
+Diagnostics:
+  - DiagnosticName:  clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+    DiagnosticMessage:
+      Message:         'Call to function ''snprintf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''snprintf_s'' in case of C11'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c'
+      FileOffset:      109
+      Replacements:    []
+      Ranges:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c'
+          FileOffset:      109
+          Length:          8
+    Notes:
+      - Message:         'Call to function ''snprintf'' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as ''snprintf_s'' in case of C11'
+        FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c'
+        FileOffset:      109
+        Replacements:    []
+        Ranges:
+          - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9/CASTLE-134-9.c'
+            FileOffset:      109
+            Length:          8
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/134-9'
+...

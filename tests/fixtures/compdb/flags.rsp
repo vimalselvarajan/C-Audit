@@ -1,0 +1,3 @@
+-I../include
+-DFEATURE=1
+-Wall

@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "${CASE_ROOT}",
+    "file": "${CASE_ROOT}/src/session.c",
+    "output": "${CASE_ROOT}/build/session.o",
+    "arguments": ["clang", "-std=c11", "-Wall", "-Wextra", "-Isrc", "-c", "src/session.c", "-o", "build/session.o"]
+  }
+]

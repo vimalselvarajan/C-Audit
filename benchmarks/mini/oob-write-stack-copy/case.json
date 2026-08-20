@@ -1,0 +1,16 @@
+{
+  "case_id": "oob-write-stack-copy",
+  "family": "out_of_bounds",
+  "description": "Unbounded strcpy into a 16-byte stack field.",
+  "analyzer_blind_spot": false,
+  "ground_truth": [
+    {
+      "path": "src/copy_name.c",
+      "line": 17,
+      "cwe": "CWE-787",
+      "family": "out_of_bounds",
+      "variant": "vulnerable",
+      "note": "strcpy into struct record::slot with no length check"
+    }
+  ]
+}

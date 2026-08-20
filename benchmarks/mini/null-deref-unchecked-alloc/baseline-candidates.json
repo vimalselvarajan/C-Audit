@@ -1,0 +1,6 @@
+{
+  "source": "captured",
+  "needs_recapture": false,
+  "note": "Captured from a real toolchain by tools/record_baseline.py. Regenerate after changing the fixture or the check profile.",
+  "diagnostics": []
+}

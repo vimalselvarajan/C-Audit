@@ -1,0 +1,235 @@
+{
+  "adjudicated": false,
+  "cost": {
+    "cached_input_tokens": 0,
+    "calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "provider_total_tokens": 0,
+    "retry_count": 0,
+    "thinking_tokens": 0,
+    "tool_round_count": 0,
+    "tool_use_tokens": 0,
+    "usd": 0.0,
+    "wall_seconds": 2.4533903249994182
+  },
+  "experiment": {
+    "analyzer_versions": {
+      "clang": "18.1.3",
+      "clang-static-analyzer": "18.1.3",
+      "clang-tidy": "18.1.3"
+    },
+    "cache_mode": "enabled",
+    "candidate_count": 16,
+    "candidate_set_hash": "8e2fac2499e9eab4c12b57f47517d1330a16aa612e31b02c9d5b27cbd52bdec8",
+    "capability_profile_version": "1",
+    "condition": "analyzer_control",
+    "config_hash": "f4eac0ed4fd85be25916738bcaf7279d3131788d80f1c19d2bf867d39efd12e0",
+    "corpus_hash": "a4bbc2828184134eba83faf634cc984085e4c1aa86872f184cffa86e2be0a170",
+    "corpus_revision": "main",
+    "model_ids": {
+      "adjudication": "gemini-3.5-flash-lite",
+      "escalation": "gemini-3.5-flash-lite",
+      "triage": "gemini-3.5-flash-lite"
+    },
+    "model_policy": {
+      "adjudication": {
+        "max_output_tokens": 4096,
+        "thinking_level": "low",
+        "thinking_token_reserve": 2048
+      },
+      "escalation": {
+        "max_output_tokens": 8192,
+        "thinking_level": "medium",
+        "thinking_token_reserve": 4096
+      },
+      "triage": {
+        "max_output_tokens": 1024,
+        "thinking_level": "minimal",
+        "thinking_token_reserve": 512
+      }
+    },
+    "policy_versions": {
+      "matching": "1",
+      "profile": "1",
+      "prompt": "2",
+      "retrieval": "1"
+    },
+    "prompt_hashes": {
+      "adjudication": "95b0013184865060d63f62bd0bff34db022afc241d71a0c73a11ee125f977069",
+      "escalation": "c3b1b306636415f1a35d2fd52cb041449203700358446c71b7b64f90dcc866ec",
+      "triage": "bf30ab616830534d100e8d5966414b5bb4f43b970bc243fb6438ff36f8601183"
+    },
+    "quota_snapshot": {
+      "captured_at": null,
+      "input_tokens_per_minute": null,
+      "requests_per_day": null,
+      "requests_per_minute": null,
+      "source": "not_recorded"
+    },
+    "retry_policy": {
+      "backoff_jitter_seconds": 0.25,
+      "backoff_multiplier": 2.0,
+      "backoff_seconds": 1.0,
+      "max_schema_attempts": 3,
+      "max_transport_attempts": 3,
+      "request_timeout_seconds": 120.0
+    },
+    "runtime": {
+      "byteorder": "little",
+      "implementation": "CPython",
+      "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "python": "3.12.3"
+    },
+    "schema_hashes": {
+      "adjudication": "6ea4e9566eee7e76612145491b04e39df180e43c3a5f2629b6bae7f2966a7ad5",
+      "triage": "f743c72c06123b602997fcadb36ce52d09588a7406aa963db6c155f0c6275ee5"
+    },
+    "schema_version": "1",
+    "sdk_versions": {
+      "caudit": "0.1.0",
+      "google-genai": "1.75.0",
+      "libclang": "18.1.1",
+      "pydantic": "2.13.4"
+    },
+    "truth_frame": {
+      "affected_region_only": false,
+      "candidate_only": false,
+      "labels_exhaustive": true,
+      "note": "exhaustive for the case's declared CWE, not every possible weakness",
+      "single_cwe": true
+    }
+  },
+  "gates": [
+    {
+      "detail": "50/50 citations resolved at revision scan time",
+      "name": "citation_resolution",
+      "observed": 1.0,
+      "passed": true,
+      "threshold": 0.95
+    },
+    {
+      "detail": "no fabricated files, functions, analyzer names, or snippets",
+      "name": "zero_fabrication",
+      "observed": 0,
+      "passed": true,
+      "threshold": 0
+    },
+    {
+      "detail": "confirmed=3, review_required=13, reported separately",
+      "name": "counts_separate",
+      "observed": 0,
+      "passed": true,
+      "threshold": 0
+    },
+    {
+      "detail": "analyzer-only run; this establishes the floor at macro-F2 0.2500. No AI was in the pipeline, so there is nothing to compare against yet.",
+      "name": "baseline_floor",
+      "observed": 0.25,
+      "passed": true,
+      "threshold": 0
+    },
+    {
+      "detail": "analyzer-only run; establishes aggregate precision 0.3333",
+      "name": "precision_improvement",
+      "observed": 0.333333,
+      "passed": true,
+      "threshold": 0.333333
+    },
+    {
+      "detail": "analyzer-only run; establishes aggregate recall 0.2500",
+      "name": "recall_non_inferiority",
+      "observed": 0.25,
+      "passed": true,
+      "threshold": 0.25
+    }
+  ],
+  "metrics": {
+    "blind_spot_case_ids": [],
+    "case_count": 11,
+    "citation_resolution_rate": 1.0,
+    "confirmed_count": 3,
+    "evidence_validity_rate": 1.0,
+    "fp_per_kloc": 7.8431372549019605,
+    "lines_of_code": 255,
+    "macro_f2": 0.25,
+    "per_family": {
+      "integer": {
+        "f2": 0.0,
+        "false_negatives": 2,
+        "false_positives": 1,
+        "family": "integer",
+        "precision": 0.0,
+        "recall": 0.0,
+        "scored": true,
+        "true_positives": 0
+      },
+      "memory_lifetime": {
+        "f2": 0.0,
+        "false_negatives": 1,
+        "false_positives": 0,
+        "family": "memory_lifetime",
+        "precision": 1.0,
+        "recall": 0.0,
+        "scored": true,
+        "true_positives": 0
+      },
+      "null_uninitialized": {
+        "f2": 1.0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "family": "null_uninitialized",
+        "precision": 1.0,
+        "recall": 1.0,
+        "scored": true,
+        "true_positives": 1
+      },
+      "out_of_bounds": {
+        "f2": 0.0,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "family": "out_of_bounds",
+        "precision": 0.0,
+        "recall": 1.0,
+        "scored": true,
+        "true_positives": 0
+      }
+    },
+    "policy_version": "1",
+    "precision": 0.3333333333333333,
+    "recall": 0.25,
+    "review_required_count": 13,
+    "suite": "castle",
+    "truth_frame": {
+      "affected_region_only": false,
+      "candidate_only": false,
+      "labels_exhaustive": true,
+      "note": "exhaustive for the case's declared CWE, not every possible weakness",
+      "single_cwe": true
+    }
+  },
+  "policy_versions": {
+    "matching": "1",
+    "profile": "1",
+    "prompt": "2",
+    "retrieval": "1"
+  },
+  "scope": [
+    "125-7",
+    "134-9",
+    "190-3",
+    "369-6",
+    "401-9",
+    "415-6",
+    "416-7",
+    "476-6",
+    "761-9",
+    "78-8",
+    "787-10"
+  ],
+  "tool_versions": {
+    "clang": "18.1.3",
+    "clang-static-analyzer": "18.1.3",
+    "clang-tidy": "18.1.3"
+  }
+}

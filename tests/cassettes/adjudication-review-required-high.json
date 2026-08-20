@@ -1,0 +1,21 @@
+{
+  "description": "The adjudication tier cannot tell, and the impact is high: escalation follows.",
+  "name": "adjudication-review-required-high",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "text": "{\n  \"verdict\": \"review_required\",\n  \"cited_evidence_ids\": [\n    \"${EVIDENCE_ID:0}\"\n  ],\n  \"cwe\": \"CWE-787\",\n  \"cwe_rationale\": \"The copy is bounded by the source's length rather than the destination's declared size, which is CWE-787 rather than a generic memory error.\",\n  \"trigger_conditions\": [\n    \"the supplied string is longer than the destination buffer\"\n  ],\n  \"impact\": {\n    \"kind\": \"memory_corruption\",\n    \"severity\": \"high\",\n    \"description\": \"Bytes past the end of the fixed buffer are overwritten.\",\n    \"evidence_supports\": \"The cited copy has no length bound, and the destination's size is fixed by the type declaration also cited.\"\n  },\n  \"reachability\": \"argued\",\n  \"exploitability\": \"unknown\",\n  \"remediation\": {\n    \"strategy\": \"Bound the copy to the destination's capacity.\",\n    \"rationale\": \"The destination size is a compile-time constant at the call site.\"\n  },\n  \"maintainability_impact\": {\n    \"ownership\": \"One caller in this translation unit; ownership is clear.\",\n    \"complexity\": \"A single statement changes.\",\n    \"coupling\": \"No callers outside this file.\",\n    \"regression_risk\": \"Low: the bound is derived from the same declaration.\",\n    \"effort\": \"low\"\n  },\n  \"unresolved_assumptions\": [\n    \"The caller's argument is attacker-influenced; no caller was retrieved.\"\n  ],\n  \"confidence_self_report\": \"review_required\"\n}",
+      "usage": {
+        "input_tokens": 4211,
+        "output_tokens": 388
+      }
+    },
+    {
+      "text": "{\n  \"verdict\": \"confirmed\",\n  \"cited_evidence_ids\": [\n    \"${EVIDENCE_ID:0}\"\n  ],\n  \"cwe\": \"CWE-787\",\n  \"cwe_rationale\": \"The copy is bounded by the source's length rather than the destination's declared size, which is CWE-787 rather than a generic memory error.\",\n  \"trigger_conditions\": [\n    \"the supplied string is longer than the destination buffer\"\n  ],\n  \"impact\": {\n    \"kind\": \"memory_corruption\",\n    \"severity\": \"high\",\n    \"description\": \"Bytes past the end of the fixed buffer are overwritten.\",\n    \"evidence_supports\": \"The cited copy has no length bound, and the destination's size is fixed by the type declaration also cited.\"\n  },\n  \"reachability\": \"argued\",\n  \"exploitability\": \"unknown\",\n  \"remediation\": {\n    \"strategy\": \"Bound the copy to the destination's capacity.\",\n    \"rationale\": \"The destination size is a compile-time constant at the call site.\"\n  },\n  \"maintainability_impact\": {\n    \"ownership\": \"One caller in this translation unit; ownership is clear.\",\n    \"complexity\": \"A single statement changes.\",\n    \"coupling\": \"No callers outside this file.\",\n    \"regression_risk\": \"Low: the bound is derived from the same declaration.\",\n    \"effort\": \"low\"\n  },\n  \"unresolved_assumptions\": [\n    \"The caller's argument is attacker-influenced; no caller was retrieved.\"\n  ],\n  \"confidence_self_report\": \"high\"\n}",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 400
+      }
+    }
+  ]
+}

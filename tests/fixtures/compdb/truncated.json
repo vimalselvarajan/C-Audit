@@ -1,0 +1,2 @@
+[
+  {"directory": "/tmp/build", "file": "a.c", "command": "clang -c a.c"

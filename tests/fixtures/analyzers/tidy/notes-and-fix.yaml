@@ -1,0 +1,23 @@
+---
+MainSourceFile: 'src/main.c'
+Diagnostics:
+  - DiagnosticName:    clang-analyzer-security.insecureAPI.strcpy
+    DiagnosticMessage:
+      Message:         "Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer"
+      FilePath:        'src/main.c'
+      FileOffset:      64
+      Replacements:
+        - FilePath:        'src/main.c'
+          Offset:          68
+          Length:          6
+          ReplacementText: 'strlcpy'
+    Notes:
+      - Message:  'destination buffer declared here'
+        FilePath: 'src/main.c'
+        FileOffset: 21
+      - Message:  'source is not bounded on this path'
+        FilePath: 'src/main.c'
+        FileOffset: 0
+    Level:           Warning
+    BuildDirectory:  '/build'
+...

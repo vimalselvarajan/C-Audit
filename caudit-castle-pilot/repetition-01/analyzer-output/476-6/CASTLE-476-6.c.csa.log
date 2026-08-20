@@ -1,0 +1,4 @@
+CASTLE-476-6.c:35:57: warning: Dereference of null pointer (loaded from field 'p') [core.NullDereference]
+   35 |     printf("fibonacci(%d) = %d, %d\n", input, result.a, *result.p);
+      |                                                         ^~~~~~~~~
+1 warning generated.

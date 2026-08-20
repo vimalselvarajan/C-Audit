@@ -1,0 +1,14 @@
+{
+  "description": "Triage says it cannot tell and the stakes are high: the escalation cell.",
+  "name": "triage-ambiguous-high",
+  "prompt_version": "2",
+  "turns": [
+    {
+      "text": "{\n  \"disposition\": \"adjudicate\",\n  \"ambiguous\": true,\n  \"impact\": {\n    \"kind\": \"memory_corruption\",\n    \"severity\": \"high\",\n    \"description\": \"An unbounded copy into a fixed buffer, if real.\",\n    \"evidence_supports\": \"The cited line has no length bound.\"\n  },\n  \"rationale\": \"The bound may be established in a caller that is not on this page.\"\n}",
+      "usage": {
+        "input_tokens": 900,
+        "output_tokens": 60
+      }
+    }
+  ]
+}

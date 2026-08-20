@@ -1,0 +1,16 @@
+---
+MainSourceFile:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/401-9/CASTLE-401-9.c'
+Diagnostics:
+  - DiagnosticName:  readability-non-const-parameter
+    DiagnosticMessage:
+      Message:         'pointer parameter ''a'' can be pointer to const'
+      FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/401-9/CASTLE-401-9.c'
+      FileOffset:      56
+      Replacements:
+        - FilePath:        '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/401-9/CASTLE-401-9.c'
+          Offset:          51
+          Length:          0
+          ReplacementText: 'const '
+    Level:           Warning
+    BuildDirectory:  '/home/vimdim/.cache/caudit/benchmarks/castle-workspace/401-9'
+...

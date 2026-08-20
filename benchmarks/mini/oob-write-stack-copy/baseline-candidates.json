@@ -1,0 +1,20 @@
+{
+  "source": "captured",
+  "needs_recapture": false,
+  "note": "Captured from a real toolchain by tools/record_baseline.py. Regenerate after changing the fixture or the check profile.",
+  "diagnostics": [
+    {
+      "path": "src/copy_name.c",
+      "line": 17,
+      "end_line": 17,
+      "message": "Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119",
+      "rule_id": "security.insecureAPI.strcpy",
+      "tool_name": "clang-static-analyzer",
+      "tool_version": "18.1.3",
+      "producer": "csa",
+      "cwe": [
+        "CWE-787"
+      ]
+    }
+  ]
+}

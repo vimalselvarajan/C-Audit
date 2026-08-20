@@ -1,0 +1,328 @@
+{
+  "$defs": {
+    "CoverageReport": {
+      "additionalProperties": false,
+      "description": "How much of the repository was actually analysed.\n\nConfirmed and review-required counts live side by side and are never\nsummed. There is no ``total_findings`` field, by design.",
+      "properties": {
+        "confirmed_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Confirmed Count",
+          "type": "integer"
+        },
+        "excluded_paths": {
+          "items": {
+            "format": "path",
+            "type": "string"
+          },
+          "title": "Excluded Paths",
+          "type": "array"
+        },
+        "excluded_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Excluded Reasons",
+          "type": "object"
+        },
+        "lines_of_code": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Lines Of Code",
+          "type": "integer"
+        },
+        "review_required_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Review Required Count",
+          "type": "integer"
+        },
+        "translation_units_failed": {
+          "minimum": 0,
+          "title": "Translation Units Failed",
+          "type": "integer"
+        },
+        "translation_units_parsed": {
+          "minimum": 0,
+          "title": "Translation Units Parsed",
+          "type": "integer"
+        },
+        "translation_units_total": {
+          "minimum": 0,
+          "title": "Translation Units Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "translation_units_total",
+        "translation_units_parsed",
+        "translation_units_failed"
+      ],
+      "title": "CoverageReport",
+      "type": "object"
+    },
+    "ModelRecord": {
+      "additionalProperties": false,
+      "description": "One model tier as configured for this run.\n\nModel ids are configuration and are recorded per run, never hard-coded in\nthe architecture.",
+      "properties": {
+        "calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "tier": {
+          "minLength": 1,
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tier",
+        "model_id"
+      ],
+      "title": "ModelRecord",
+      "type": "object"
+    },
+    "StageRecord": {
+      "additionalProperties": false,
+      "description": "One pipeline stage: how long it took and how it ended.\n\nTimings live here rather than beside the findings for the same reason the\ntimestamps do — a duration is machine-specific, and ``report.md`` and\n``results.sarif`` have to stay byte-identical across two runs.",
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "duration_seconds": {
+          "minimum": 0.0,
+          "title": "Duration Seconds",
+          "type": "number"
+        },
+        "stage": {
+          "minLength": 1,
+          "title": "Stage",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/StageStatus"
+        }
+      },
+      "required": [
+        "stage",
+        "status",
+        "duration_seconds"
+      ],
+      "title": "StageRecord",
+      "type": "object"
+    },
+    "StageStatus": {
+      "description": "How one pipeline stage ended.\n\n``skipped`` and ``failed`` are deliberately different: a stage nobody asked\nfor did not fail, and a stage that failed did not decline to run. Only the\nsecond makes a report partial.",
+      "enum": [
+        "ok",
+        "degraded",
+        "failed",
+        "skipped"
+      ],
+      "title": "StageStatus",
+      "type": "string"
+    },
+    "ToolRecord": {
+      "additionalProperties": false,
+      "description": "One analyzer or compiler, and the version that actually ran.",
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "title": "ToolRecord",
+      "type": "object"
+    }
+  },
+  "$id": "https://caudit.dev/schemas/run-manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Everything needed to reproduce and compare a run.",
+  "properties": {
+    "caudit_version": {
+      "minLength": 1,
+      "title": "Caudit Version",
+      "type": "string"
+    },
+    "cited_region_hashes": {
+      "additionalProperties": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Cited Region Hashes",
+      "type": "object"
+    },
+    "compile_commands_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Compile Commands Path"
+    },
+    "compile_commands_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Compile Commands Sha256"
+    },
+    "config_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Hash",
+      "type": "string"
+    },
+    "config_snapshot": {
+      "additionalProperties": true,
+      "title": "Config Snapshot",
+      "type": "object"
+    },
+    "coverage": {
+      "$ref": "#/$defs/CoverageReport"
+    },
+    "finished_at": {
+      "format": "date-time",
+      "title": "Finished At",
+      "type": "string"
+    },
+    "models": {
+      "items": {
+        "$ref": "#/$defs/ModelRecord"
+      },
+      "title": "Models",
+      "type": "array"
+    },
+    "partial": {
+      "default": false,
+      "title": "Partial",
+      "type": "boolean"
+    },
+    "policy_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Policy Versions",
+      "type": "object"
+    },
+    "repository_root": {
+      "minLength": 1,
+      "title": "Repository Root",
+      "type": "string"
+    },
+    "revision": {
+      "minLength": 1,
+      "title": "Revision",
+      "type": "string"
+    },
+    "revision_dirty": {
+      "default": false,
+      "title": "Revision Dirty",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "default": "1.7.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/$defs/StageRecord"
+      },
+      "title": "Stages",
+      "type": "array"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "tools": {
+      "items": {
+        "$ref": "#/$defs/ToolRecord"
+      },
+      "minItems": 1,
+      "title": "Tools",
+      "type": "array"
+    },
+    "total_cost_usd": {
+      "default": 0.0,
+      "minimum": 0.0,
+      "title": "Total Cost Usd",
+      "type": "number"
+    }
+  },
+  "required": [
+    "caudit_version",
+    "started_at",
+    "finished_at",
+    "repository_root",
+    "revision",
+    "tools",
+    "config_hash",
+    "coverage"
+  ],
+  "title": "RunManifest",
+  "type": "object",
+  "x-caudit-schema-version": "1.7.0"
+}

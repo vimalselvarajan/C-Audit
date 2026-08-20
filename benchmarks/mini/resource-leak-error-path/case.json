@@ -1,0 +1,16 @@
+{
+  "case_id": "resource-leak-error-path",
+  "family": "resource_leak",
+  "description": "FILE handle leaked on the rejection branch; the branch's reachability depends on a function in another translation unit.",
+  "analyzer_blind_spot": false,
+  "ground_truth": [
+    {
+      "path": "src/loader.c",
+      "line": 27,
+      "cwe": "CWE-772",
+      "family": "resource_leak",
+      "variant": "vulnerable",
+      "note": "early return without fclose; cross-TU predicate hides the branch from single-TU analysis. Predicted to be a blind spot and measured on 2026-08-15 not to be one: alpha.unix.Stream reports CWE-775 here, which the matching policy accepts as equivalent to CWE-772. The prediction was made against a check list that did not enable the alpha checkers; the curated profile does."
+    }
+  ]
+}

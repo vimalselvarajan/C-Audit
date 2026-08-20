@@ -1,0 +1,5 @@
+CASTLE-78-8.c:20:18: warning: declaration shadows a local variable [-Wshadow]
+CASTLE-78-8.c:12:14: note: previous declaration is here
+CASTLE-78-8.c:10:14: warning: unused parameter 'argc' [-Wunused-parameter]
+CASTLE-78-8.c:10:26: warning: unused parameter 'argv' [-Wunused-parameter]
+CASTLE-78-8.c:20:27: warning: comparison of integers of different signs: 'int' and 'unsigned long' [-Wsign-compare]

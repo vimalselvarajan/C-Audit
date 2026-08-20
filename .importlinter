@@ -1,0 +1,64 @@
+[importlinter]
+root_package = caudit
+include_external_packages = True
+
+[importlinter:contract:model_is_pure]
+name = model contracts do not depend on application infrastructure
+type = forbidden
+source_modules =
+    caudit.model
+forbidden_modules =
+    caudit.cli
+    caudit.report
+    caudit.eval
+    caudit.llm
+    caudit.application
+
+[importlinter:contract:capabilities_are_cli_independent]
+name = capability modules do not depend on CLI reporting or evaluation
+type = forbidden
+source_modules =
+    caudit.analyzers
+    caudit.evidence
+    caudit.index
+    caudit.intake
+    caudit.retrieval
+    caudit.llm
+    caudit.verify
+forbidden_modules =
+    caudit.cli
+    caudit.report
+    caudit.eval
+
+[importlinter:contract:reporting_does_not_run_the_pipeline]
+name = reporting does not import pipeline orchestration
+type = forbidden
+source_modules =
+    caudit.report
+forbidden_modules =
+    caudit.application.pipeline
+    caudit.application.scan
+
+[importlinter:contract:cli_entrypoint_composes]
+name = CLI entrypoint only composes commands and use cases
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    caudit.cli.main
+forbidden_modules =
+    caudit.analyzers
+    caudit.evidence
+    caudit.index
+    caudit.intake
+    caudit.llm
+    caudit.report
+    caudit.retrieval
+    caudit.verify
+
+[importlinter:contract:application_does_not_depend_on_cli]
+name = application use cases do not import CLI input adapters
+type = forbidden
+source_modules =
+    caudit.application
+forbidden_modules =
+    caudit.cli

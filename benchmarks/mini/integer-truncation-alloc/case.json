@@ -1,0 +1,16 @@
+{
+  "case_id": "integer-truncation-alloc",
+  "family": "integer",
+  "description": "size_t from another translation unit truncated to unsigned short for the allocation while the untruncated value drives the fill loop.",
+  "analyzer_blind_spot": true,
+  "ground_truth": [
+    {
+      "path": "src/build_table.c",
+      "line": 20,
+      "cwe": "CWE-197",
+      "family": "integer",
+      "variant": "vulnerable",
+      "note": "cross-TU flow: single-TU analyzers see an opaque parse_length call and miss the width mismatch"
+    }
+  ]
+}
