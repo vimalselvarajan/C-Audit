@@ -27,7 +27,7 @@ dev = [
   "pytest-cov>=6,<8",
   "hypothesis>=6.112,<7",
   "ruff>=0.8,<1",
-  "mypy>=1.13,<2",
+  "mypy>=1.13,<3",
   "coverage>=7.6,<8",
   "types-PyYAML>=6.0,<7",
   # Part 08 validates its SARIF output against the vendored official schema.
