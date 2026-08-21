@@ -64,6 +64,23 @@
 5. Update unit, integration, SARIF contract, golden, and end-to-end tests appropriate
    to the visible change.
 
+## Playbook: maintain documentation
+
+1. Keep `AGENTS.md`, `AGNETS.md`, `AGNETS.md.orig`, and `CLAUDE.md` as minimal direct
+   pointers to this agent-doc index; never copy project guidance into them.
+2. Put durable implementation orientation in `agents_docs/`. Put product decisions,
+   setup procedures, plans, measurements, and credibility gaps in the matching
+   canonical page under `my_docs/`; link across the boundary instead of duplicating.
+3. Append measured results to `my_docs/project/evaluation-results.md` by policy version.
+   Never replace an older, different-policy result with a running aggregate, and state
+   plainly when a measurement was not run.
+4. Keep `my_docs/plan/` filenames zero-padded. Preserve each part's eight-section
+   template, unique `AC-<part>-<n>` and `T-<part>-<nn>` identifiers, and the traceability
+   matrix in `00-overview.md` when adding criteria or tests.
+5. Update the specification's "last checked" or plan overview's "last revised" date
+   when refreshing assumptions, and link a primary source for each new external claim.
+6. Run `make docs-check` after changing Markdown structure, canonical sources, or links.
+
 ## Non-negotiable boundaries
 
 - Never infer build flags, include directories, macro definitions, standards, or a

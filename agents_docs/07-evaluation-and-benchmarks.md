@@ -31,9 +31,12 @@ make eval       # offline mini analyzer-only replay
 make eval-real  # mini suite against real Clang analyzers
 ```
 
-Candidate generation bounds recall: adjudication can refine/explain what analyzers
-already produced, but it must never delete a candidate or manufacture a missing one.
-Interpret model deltas under that constraint.
+Candidate generation bounds absolute recall: if the analyzers produce no candidate for
+a defect, adjudication never sees it and cannot recover it. Within a fixed candidate
+set, adjudication can classify candidates left review-required by deterministic
+promotion, improving confirmed-finding recall and precision over that baseline. It must
+still never delete a candidate or manufacture a missing one. Interpret model deltas
+under both constraints.
 
 ## Metrics, matching, and gates
 

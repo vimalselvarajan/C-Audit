@@ -3,6 +3,26 @@
 This directory is a working map for agents modifying C Audit. It is a guide to the
 implementation; the canonical product decisions remain in [`my_docs/`](../my_docs/README.md).
 
+## Documentation authority
+
+This README is the single entry point for repository agent instructions. The top-level
+`AGENTS.md`, `AGNETS.md`, `AGNETS.md.orig`, and `CLAUDE.md` files are compatibility
+pointers only; keep project guidance here instead of duplicating it in those files.
+
+Use the narrowest canonical source for facts that change independently:
+
+- [`my_docs/`](../my_docs/README.md) owns product decisions, the design specification,
+  the implementation plan, setup, measured results, and project gaps.
+- The root [README](../README.md) summarizes current project status and public usage.
+- [Evaluation results](../my_docs/project/evaluation-results.md) owns measured figures
+  and their policy-version caveats; [project gaps](../my_docs/project/project-gaps.md)
+  owns unvalidated claims and the proof roadmap.
+- The [setup guide](../my_docs/guides/setup.md) owns machine setup and repository
+  maintenance procedures, including generated-history cleanup.
+
+Agent docs should contain durable implementation guidance and links to those records,
+not copied status, measurements, local-machine facts, or historical incident narratives.
+
 ## Start here
 
 1. Read the [product and repository overview](../README.md), then the

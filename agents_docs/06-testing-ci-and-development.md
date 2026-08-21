@@ -50,8 +50,9 @@ wheel can be loaded. CI additionally installs controlled Clang tools and runs
 - `schemas/` is generated from Pydantic contracts via `tools/export_schemas.py`. Use
   `make schemas` after an intentional model-shape change; use `make schema-check` to
   prove no update was missed.
-- `tools/check_docs.py` validates root and `my_docs/` documents and their local links.
-  Keep the canonical tree under `my_docs/`; do not recreate a legacy `docs/` tree.
+- `tools/check_docs.py` validates the root compatibility pointers plus the `agents_docs/`
+  and `my_docs/` trees and their local links. Keep agent guidance in `agents_docs/`,
+  product/design records in `my_docs/`, and do not recreate a legacy `docs/` tree.
 - Golden tests make report order and wording part of the external behavior. Update a
   golden only after confirming the behavior change is intentional and deterministic.
 - `make guard` and pre-commit refuse generated output, nested repositories, and `.env`
