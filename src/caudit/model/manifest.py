@@ -50,8 +50,15 @@ class ModelRecord(BaseModel):
     tier: str = Field(min_length=1)
     model_id: str = Field(min_length=1)
     calls: int = Field(default=0, ge=0)
+    cached_calls: int = Field(default=0, ge=0)
+    retry_count: int = Field(default=0, ge=0)
+    unreported_usage_calls: int = Field(default=0, ge=0)
     input_tokens: int = Field(default=0, ge=0)
     output_tokens: int = Field(default=0, ge=0)
+    thinking_tokens: int = Field(default=0, ge=0)
+    cached_input_tokens: int = Field(default=0, ge=0)
+    tool_use_tokens: int = Field(default=0, ge=0)
+    total_tokens: int = Field(default=0, ge=0)
 
 
 class StageStatus(StrEnum):

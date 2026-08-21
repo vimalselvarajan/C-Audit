@@ -67,7 +67,16 @@ class ProviderRequest(BaseModel):
     prompt: AssembledPrompt
     #: The flattened response schema for this tier, from :mod:`caudit.llm.schema`.
     response_schema: dict[str, Any]
+    structured_output: bool = True
+    thinking_level: str = "low"
+    max_output_tokens: int = Field(default=4_096, gt=0)
+    thinking_token_reserve: int = Field(default=0, ge=0)
     timeout_seconds: float = Field(default=120.0, gt=0.0)
+
+    @property
+    def quota_token_reservation(self) -> int:
+        return self.prompt.token_estimate + self.max_output_tokens + self.thinking_token_reserve
+
     #: Feedback from a rejected attempt, appended verbatim so the model is told
     #: what was wrong rather than asked again in the same words.
     correction: str | None = None

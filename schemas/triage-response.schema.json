@@ -70,7 +70,7 @@
   ],
   "type": "object",
   "x-caudit-response-schema": "triage",
-  "x-caudit-schema-version": "1.7.0",
+  "x-caudit-schema-version": "1.8.0",
   "x-caudit-transforms": [
     "$ref/$defs are inlined at every use; a recursive definition is refused",
     "'$defs' is removed: inlined at every reference, so no definition block survives",

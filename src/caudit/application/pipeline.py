@@ -47,6 +47,7 @@ from caudit.finding_policy.provenance import (
     claim_provenance,
 )
 from caudit.index.store import Index
+from caudit.llm.checkpoint import CheckpointStore, checkpoint_identity, restore_account
 from caudit.llm.service import (
     AdjudicationOutcome,
     ConsentDecision,
@@ -119,11 +120,14 @@ class CandidateOutcome:
     adjudication: AdjudicationOutcome | None = None
     gate: GateOutcome | None = None
     limitations: tuple[Limitation, ...] = ()
+    resumed: bool = False
 
     @property
     def adjudicated(self) -> bool:
         """Whether a model actually answered about this candidate."""
-        return self.adjudication is not None and self.adjudication.adjudication is not None
+        return self.resumed or (
+            self.adjudication is not None and self.adjudication.adjudication is not None
+        )
 
 
 @dataclass(frozen=True)
@@ -202,6 +206,8 @@ def adjudicate_candidates(
     analyzers: Sequence[str],
     account: RunAccount | None = None,
     cache: ResponseCache | None = None,
+    checkpoint: CheckpointStore | None = None,
+    verification_enabled: bool = True,
 ) -> PipelineResult:
     """Retrieval, adjudication and the gate, once per candidate.
 
@@ -215,8 +221,28 @@ def adjudicate_candidates(
     ledger_account = account if account is not None else RunAccount(config=config)
     policy = ExpansionPolicy.from_config(config)
     outcomes: list[CandidateOutcome] = []
+    completed: set[str] = set()
+    identity = checkpoint_identity(candidates, config) if checkpoint is not None else ""
+    if checkpoint is not None:
+        state = checkpoint.load(identity)
+        if state is not None:
+            restore_account(ledger_account, state)
+            ledger.spent = state.retrieval_spent
+            ledger.starved = list(state.retrieval_starved)
+            for entry in state.entries:
+                outcomes.append(
+                    CandidateOutcome(
+                        candidate=entry.candidate,
+                        finding=entry.finding,
+                        limitations=tuple(entry.limitations),
+                        resumed=True,
+                    )
+                )
+                completed.add(entry.candidate.candidate_id)
 
     for candidate in sort_candidates(candidates):
+        if candidate.candidate_id in completed:
+            continue
         if ledger.exhausted:
             starved = ledger.starve(candidate.candidate_id)
             outcomes.append(
@@ -255,15 +281,19 @@ def adjudicate_candidates(
             )
             continue
 
-        gated = verify(
-            outcome.adjudication,
-            context,
-            index,
-            store,
-            analyzers=analyzers,
-            model_provenance=model_provenance(outcome, config),
-        )
-        finding = gated.finding if gated.finding is not None else _refused_finding(gated)
+        if verification_enabled:
+            gated = verify(
+                outcome.adjudication,
+                context,
+                index,
+                store,
+                analyzers=analyzers,
+                model_provenance=model_provenance(outcome, config),
+            )
+            finding = gated.finding if gated.finding is not None else _refused_finding(gated)
+        else:
+            gated = None
+            finding = promote_candidate(candidate, store=store)
         outcomes.append(
             CandidateOutcome(
                 candidate=candidate,
@@ -274,6 +304,14 @@ def adjudicate_candidates(
                 limitations=tuple(outcome.limitations),
             )
         )
+        if checkpoint is not None:
+            checkpoint.save(
+                identity=identity,
+                outcomes=outcomes,
+                account=ledger_account,
+                retrieval_spent=ledger.spent,
+                retrieval_starved=ledger.starved,
+            )
 
     return PipelineResult(
         outcomes=tuple(outcomes),

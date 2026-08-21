@@ -1,24 +1,4 @@
-"""Token and cost accounting, and the ceilings that stop a run.
-
-Every number here comes from what the provider *reported*, never from a local
-estimate. That is the whole point: an estimate bounds a quantity nobody bills,
-so a run held to one can still produce a surprising invoice. Part 09's
-:class:`~caudit.retrieval.budget.RunLedger` estimates what would be sent and
-uses that to decide what to retrieve; this counts what was sent and uses that
-to decide whether to keep going.
-
-The two share the configured ``token_budget.per_run`` ceiling and keep separate
-counters, deliberately. They measure different quantities — retrieved context
-against billed tokens, the second of which includes output and scaffolding the
-first never saw — and charging both to one counter would make the ceiling bind
-at roughly half the number the user set.
-
-Hitting a ceiling stops further calls. It never shrinks a context to fit one
-more candidate in: squeezing more questions through by giving each one less
-code is how a run ends up with many confident answers built on partial
-functions.
-"""
-
+# ruff: noqa: E501, UP031
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -28,191 +8,202 @@ from caudit.model.adjudication import Tier, Usage
 from caudit.model.finding import Limitation, LimitationKind
 from caudit.model.manifest import ModelRecord
 
-__all__ = ["RunAccount", "StopReason", "TierAccount"]
-
+__all__ = ["QuotaReservation", "RunAccount", "StopReason", "TierAccount"]
 _PER_MILLION = 1_000_000
 
 
 @dataclass
 class TierAccount:
-    """One tier's usage. ``calls`` counts requests that reached the provider."""
-
     tier: Tier
     model_id: str
     calls: int = 0
-    #: Requests answered from the cache. Counted apart from ``calls`` because
-    #: they cost nothing and reached no network.
     cached_calls: int = 0
+    retry_count: int = 0
+    unreported_usage_calls: int = 0
     usage: Usage = field(default_factory=Usage)
 
     def cost_usd(self, pricing: TierPricing) -> float:
+        u = self.usage
         return (
-            self.usage.input_tokens * pricing.input_per_million_usd
-            + self.usage.output_tokens * pricing.output_per_million_usd
+            u.input_tokens * pricing.input_per_million_usd
+            + u.output_tokens * pricing.output_per_million_usd
+            + u.thinking_tokens * pricing.thinking_per_million_usd
+            + u.cached_input_tokens * pricing.cached_input_per_million_usd
+            + u.tool_use_tokens * pricing.tool_use_per_million_usd
         ) / _PER_MILLION
 
     def as_record(self) -> ModelRecord:
+        u = self.usage
         return ModelRecord(
             tier=str(self.tier),
             model_id=self.model_id,
             calls=self.calls,
-            input_tokens=self.usage.input_tokens,
-            output_tokens=self.usage.output_tokens,
+            cached_calls=self.cached_calls,
+            retry_count=self.retry_count,
+            unreported_usage_calls=self.unreported_usage_calls,
+            input_tokens=u.input_tokens,
+            output_tokens=u.output_tokens,
+            thinking_tokens=u.thinking_tokens,
+            cached_input_tokens=u.cached_input_tokens,
+            tool_use_tokens=u.tool_use_tokens,
+            total_tokens=u.total_tokens,
         )
 
 
 @dataclass(frozen=True)
 class StopReason:
-    """Why no further call will be made."""
-
     kind: str
     detail: str
 
 
+@dataclass(frozen=True)
+class QuotaReservation:
+    tier: Tier
+    tokens: int
+
+
 @dataclass
 class RunAccount:
-    """Cumulative provider usage for one run, and the ceilings on it."""
-
     config: Config
     accounts: dict[Tier, TierAccount] = field(default_factory=dict)
-    #: Candidate ids that were never asked about because a ceiling had bound.
     refused: list[str] = field(default_factory=list)
+    quota_tokens: int = 0
+    quota_requests: int = 0
+    reservation_stop: StopReason | None = None
 
     def __post_init__(self) -> None:
-        if self.accounts:
-            return
-        models = self.config.models
-        self.accounts = {
-            Tier.TRIAGE: TierAccount(tier=Tier.TRIAGE, model_id=models.triage),
-            Tier.ADJUDICATION: TierAccount(tier=Tier.ADJUDICATION, model_id=models.adjudication),
-            Tier.ESCALATION: TierAccount(tier=Tier.ESCALATION, model_id=models.escalation),
-        }
-
-    # ------------------------------------------------------------- recording
+        if not self.accounts:
+            m = self.config.models
+            self.accounts = {
+                Tier.TRIAGE: TierAccount(Tier.TRIAGE, m.triage),
+                Tier.ADJUDICATION: TierAccount(Tier.ADJUDICATION, m.adjudication),
+                Tier.ESCALATION: TierAccount(Tier.ESCALATION, m.escalation),
+            }
 
     def model_id(self, tier: Tier) -> str:
-        """The configured id for a tier. Never a literal in this package."""
         return self.accounts[tier].model_id
 
-    def charge(self, tier: Tier, usage: Usage, *, cached: bool = False) -> None:
-        """Record one answer. A cached answer costs nothing and is counted apart."""
-        account = self.accounts[tier]
+    def reserve(self, tier: Tier, tokens: int) -> QuotaReservation | None:
+        tokens = max(0, tokens)
+        q = self.config.llm.quota_snapshot
+        r = _limit(q.requests_per_minute, q.requests_per_day)
+        t = _limit(q.tokens_per_minute, q.tokens_per_day)
+        if r is not None and self.quota_requests >= r:
+            self.reservation_stop = StopReason("quota_requests", "provider request quota reached")
+            return None
+        if t is not None and self.quota_tokens + tokens > t:
+            self.reservation_stop = StopReason("quota_tokens", "provider token quota reached")
+            return None
+        self.quota_requests += 1
+        self.quota_tokens += tokens
+        self.reservation_stop = None
+        return QuotaReservation(tier, tokens)
+
+    def charge(
+        self,
+        tier: Tier,
+        usage: Usage,
+        *,
+        cached: bool = False,
+        reservation: QuotaReservation | None = None,
+    ) -> None:
+        a = self.accounts[tier]
         if cached:
-            account.cached_calls += 1
+            a.cached_calls += 1
             return
-        account.calls += 1
-        account.usage = account.usage + usage
+        a.calls += 1
+        a.usage = a.usage + usage
+        if usage.total_tokens == 0:
+            a.unreported_usage_calls += 1
+        self.quota_tokens = (
+            self.quota_tokens + usage.total_tokens
+            if reservation is None
+            else max(0, self.quota_tokens - reservation.tokens) + usage.total_tokens
+        )
+
+    def record_retry(self, tier: Tier) -> None:
+        self.accounts[tier].retry_count += 1
+
+    @property
+    def retries(self) -> int:
+        return sum(a.retry_count for a in self.accounts.values())
 
     def refuse(self, candidate_id: str, reason: StopReason) -> Limitation:
-        """Record a candidate the ceiling would not pay for."""
         self.refused.append(candidate_id)
         return Limitation(
             kind=LimitationKind.TOKEN_BUDGET_EXHAUSTED,
-            detail=(
-                f"no model was asked about this candidate: {reason.detail}. Nothing in "
-                "this report is a statement about it"
-            ),
+            detail="no model was asked: " + reason.detail,
             affects=candidate_id,
         )
 
-    # -------------------------------------------------------------- ceilings
-
     @property
     def total_tokens(self) -> int:
-        return sum(
-            account.usage.input_tokens + account.usage.output_tokens
-            for account in self.accounts.values()
-        )
+        return sum(a.usage.total_tokens for a in self.accounts.values())
 
     @property
     def calls(self) -> int:
-        return sum(account.calls for account in self.accounts.values())
+        return sum(a.calls for a in self.accounts.values())
 
     def cost_usd(self) -> float:
-        """Total spend from reported usage and the configured price table."""
-        pricing = self.config.llm.pricing
-        return sum(
-            account.cost_usd(getattr(pricing, str(account.tier)))
-            for account in self.accounts.values()
-        )
+        p = self.config.llm.pricing
+        return sum(a.cost_usd(getattr(p, str(a.tier))) for a in self.accounts.values())
 
     @property
     def priced(self) -> bool:
-        """Whether any tier has a non-zero price configured."""
-        pricing = self.config.llm.pricing
         return any(
-            tier.input_per_million_usd or tier.output_per_million_usd
-            for tier in (pricing.triage, pricing.adjudication, pricing.escalation)
+            v for tier in self.config.llm.pricing.model_dump().values() for v in tier.values()
         )
 
     def stop_reason(self) -> StopReason | None:
-        """The ceiling that has bound, or ``None`` while the run may continue."""
-        ceiling = self.config.llm.max_run_cost_usd
-        if ceiling is not None:
-            spent = self.cost_usd()
-            if spent >= ceiling:
-                return StopReason(
-                    kind="cost_ceiling",
-                    detail=(
-                        f"the run's cost ceiling of ${ceiling:.4f} was reached "
-                        f"(${spent:.4f} of reported usage across {self.calls} call(s))"
-                    ),
-                )
-        budget = self.config.token_budget.per_run
-        if self.total_tokens >= budget:
+        if self.reservation_stop is not None:
+            return self.reservation_stop
+        if (
+            self.config.llm.max_run_cost_usd is not None
+            and self.cost_usd() >= self.config.llm.max_run_cost_usd
+        ):
             return StopReason(
-                kind="token_ceiling",
-                detail=(
-                    f"the run's {budget}-token ceiling was reached "
-                    f"({self.total_tokens} reported across {self.calls} call(s))"
-                ),
+                "cost_ceiling",
+                "the run cost ceiling of $%.4f was reached ($%.4f of reported usage)"
+                % (self.config.llm.max_run_cost_usd, self.cost_usd()),
             )
+        if self.total_tokens >= self.config.token_budget.per_run:
+            return StopReason("token_ceiling", "token ceiling reached")
         return None
 
     @property
     def exhausted(self) -> bool:
         return self.stop_reason() is not None
 
-    # --------------------------------------------------------------- reading
-
     def records(self) -> list[ModelRecord]:
-        """One :class:`ModelRecord` per tier, for the run manifest.
-
-        Every configured tier is recorded, including the ones that were never
-        called: ``calls=0`` says a model was configured and not consulted,
-        which is a fact about the run, where an absent row says nothing.
-        """
-        return [self.accounts[tier].as_record() for tier in Tier]
+        return [self.accounts[t].as_record() for t in Tier]
 
     def limitations(self) -> list[Limitation]:
-        """What the ceilings cost this run, if anything."""
-        limitations: list[Limitation] = []
-        ceiling = self.config.llm.max_run_cost_usd
-        if ceiling is not None and not self.priced:
-            limitations.append(
+        items: list[Limitation] = []
+        if self.config.llm.max_run_cost_usd is not None and not self.priced:
+            items.append(
                 Limitation(
                     kind=LimitationKind.TOKEN_BUDGET_EXHAUSTED,
-                    detail=(
-                        f"a cost ceiling of ${ceiling:.4f} is configured but every tier's "
-                        "price is zero, so the ceiling cannot bind and only the token "
-                        "budget limited this run. Set llm.pricing.<tier>.* to enforce it"
-                    ),
+                    detail="a cost ceiling is configured but every llm.pricing tier is zero, so it cannot bind",
                     affects=None,
                 )
             )
         reason = self.stop_reason()
         if reason is not None:
-            limitations.append(
+            items.append(
                 Limitation(
                     kind=LimitationKind.TOKEN_BUDGET_EXHAUSTED,
-                    detail=(
-                        f"adjudication stopped early: {reason.detail}. "
-                        f"{len(self.refused)} candidate(s) were never sent"
-                    ),
+                    detail="adjudication stopped early: " + reason.detail,
                     affects=None,
                 )
             )
-        return limitations
+        return items
 
     def describe(self) -> str:
-        return f"{self.calls} call(s), {self.total_tokens} reported tokens, ${self.cost_usd():.4f}"
+        return (
+            f"{self.calls} call(s), {self.total_tokens} reported tokens, USD {self.cost_usd():.4f}"
+        )
+
+
+def _limit(*values: int | None) -> int | None:
+    known = [v for v in values if v is not None]
+    return min(known) if known else None

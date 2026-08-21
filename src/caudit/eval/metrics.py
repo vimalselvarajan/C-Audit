@@ -29,7 +29,7 @@ from collections.abc import Mapping, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from caudit.eval.case import BenchmarkCase, GroundTruth
+from caudit.eval.case import BenchmarkCase, GroundTruth, TruthFrame
 from caudit.eval.matching import MatchingPolicy
 from caudit.evidence.resolver import Resolution
 from caudit.model.cwe import WeaknessFamily
@@ -118,7 +118,10 @@ class Metrics(BaseModel):
 
     suite: str
     policy_version: str
+    truth_frame: TruthFrame = Field(default_factory=TruthFrame)
     per_family: dict[WeaknessFamily, FamilyMetrics]
+    precision: float = 0.0
+    recall: float = 0.0
     macro_f2: float
     fp_per_kloc: float
     evidence_validity_rate: float
@@ -210,6 +213,8 @@ def compute_metrics(
         suite=suite,
         policy_version=policy.version,
         per_family=per_family,
+        precision=precision_of(sum(tp.values()), sum(fp.values())),
+        recall=recall_of(sum(tp.values()), sum(fn.values())),
         macro_f2=macro_f2,
         fp_per_kloc=(total_fp / (total_loc / 1000.0)) if total_loc else 0.0,
         evidence_validity_rate=_evidence_validity(findings_by_case, resolutions),

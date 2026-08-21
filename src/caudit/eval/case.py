@@ -8,7 +8,6 @@ interface, so the metrics code never learns which corpus it is scoring.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from enum import StrEnum
 from pathlib import Path, PurePosixPath
 from typing import Literal, Protocol, runtime_checkable
 
@@ -25,37 +24,18 @@ __all__ = [
 ]
 
 
-class TruthFrame(StrEnum):
-    """What the ground truth is a complete account *of*.
+class TruthFrame(BaseModel):
+    """Structured, defaultable description of the benchmark truth boundary."""
 
-    Two label sets can both be honest and still have different recall
-    denominators, and the difference is invisible in the number. A synthetic
-    corpus knows every defect it contains, so a missed one is a false negative.
-    A label set drawn from one scan's candidates knows only what the analyzers
-    proposed, so a defect nothing flagged produces no row and cannot be counted
-    against the tool at all.
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
-    Both are worth measuring and neither may be compared with the other, so the
-    frame is declared rather than inferred and is carried on
-    :class:`~caudit.eval.metrics.Metrics` all the way to ``caudit compare``.
-    """
-
-    #: Every defect in the case is labelled. Recall is recall.
-    EXHAUSTIVE = "exhaustive"
-    #: Labels were drawn from one scan's candidate set, so the recall
-    #: denominator is "defects the analyzers flagged", not "defects present".
-    #: Within the frame every count is real: a labelled-vulnerable candidate
-    #: left unconfirmed is a genuine false negative, and a labelled-safe one
-    #: that gets confirmed is a genuine false positive.
-    ANALYZER_CANDIDATES = "analyzer_candidates"
+    exhaustive: bool = True
+    single_cwe: bool = False
 
     def describe(self) -> str:
-        if self is TruthFrame.EXHAUSTIVE:
+        if self.exhaustive:
             return "every defect in the corpus is labelled"
-        return (
-            "labels drawn from the analyzer candidate set; recall is bounded by what the analyzers "
-            "flagged"
-        )
+        return "labels are bounded by the analyzer candidate set"
 
 
 class GroundTruth(BaseModel):

@@ -286,21 +286,32 @@ def _attempt_loop(
                 return parsed, attempts, remembered.usage
 
     for number in range(1, config.max_attempts + 1):
+        policy = getattr(config.model_policy, str(tier))
         request = ProviderRequest(
             tier=tier,
             model_id=model_id,
             prompt=prompt,
             response_schema=response_schema,
+            structured_output=policy.structured_output,
+            thinking_level=str(policy.thinking_level),
+            max_output_tokens=policy.max_output_tokens,
+            thinking_token_reserve=policy.thinking_token_reserve,
             timeout_seconds=config.request_timeout_seconds,
             correction=correction,
         )
-        response, transport = _call(provider, request, config=config, sleeper=sleeper)
+        response, transport, _reservation = _call(
+            provider,
+            request,
+            config=config,
+            account=account,
+            sleeper=sleeper,
+            schema_retry=number > 1,
+        )
         attempts.extend(transport)
         if response is None:
             return None, attempts, total
 
         total = total + response.usage
-        account.charge(tier, response.usage)
 
         try:
             parsed = model.model_validate_json(response.text)
@@ -367,16 +378,39 @@ def _call(
     request: ProviderRequest,
     *,
     config: LLMConfig,
+    account: RunAccount,
     sleeper: Callable[[float], None],
-) -> tuple[ProviderResponse | None, list[Attempt]]:
-    """One logical request, retrying transport failures with backoff."""
+    schema_retry: bool,
+) -> tuple[ProviderResponse | None, list[Attempt], object | None]:
+    """Reserve quota before each physical call and retry transport only."""
     attempts: list[Attempt] = []
     delay = 0.0
     for number in range(1, config.max_transport_attempts + 1):
         if delay:
             sleeper(delay)
+        if schema_retry or number > 1:
+            account.record_retry(request.tier)
+        reservation = account.reserve(request.tier, request.quota_token_reservation)
+        if reservation is None:
+            attempts.append(
+                Attempt(
+                    tier=request.tier,
+                    model_id=request.model_id,
+                    number=number,
+                    outcome=AttemptOutcome.REFUSED,
+                    detail=(
+                        account.reservation_stop.detail
+                        if account.reservation_stop
+                        else "quota unavailable"
+                    ),
+                    delay_seconds=delay,
+                )
+            )
+            return None, attempts, None
         try:
-            return provider.adjudicate(request), attempts
+            response = provider.adjudicate(request)
+            account.charge(request.tier, response.usage, reservation=reservation)
+            return response, attempts, reservation
         except ProviderRefusedError as exc:
             attempts.append(
                 Attempt(
@@ -388,7 +422,7 @@ def _call(
                     delay_seconds=delay,
                 )
             )
-            return None, attempts
+            return None, attempts, reservation
         except ProviderUnavailableError as exc:
             attempts.append(
                 Attempt(
@@ -401,7 +435,7 @@ def _call(
                 )
             )
             delay = config.backoff_seconds if delay == 0.0 else delay * config.backoff_multiplier
-    return None, attempts
+    return None, attempts, None
 
 
 def _correction(error: ValidationError) -> str:

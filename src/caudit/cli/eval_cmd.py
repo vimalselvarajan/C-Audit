@@ -35,6 +35,7 @@ from caudit.eval.adjudicated import AdjudicatedSource, CompileCommandsFor
 from caudit.eval.baseline import CandidateSource, RecordedCandidateSource
 from caudit.eval.case import BenchmarkSuite
 from caudit.eval.compare import CostSummary
+from caudit.eval.experiment import ExperimentCondition
 from caudit.eval.gates import KNOWN_PRODUCER_TOOLS, GateResult, model_producer_tools
 from caudit.eval.metrics import Metrics
 from caudit.eval.profiled import ProfiledCandidateSource
@@ -139,6 +140,10 @@ def run_eval(
         policy_versions=_policy_versions(config),
         cost=_cost(adjudicator, wall_seconds=perf_counter() - began),
         adjudicated=not baseline,
+        config=config,
+        experiment_condition=(
+            ExperimentCondition.ANALYZER_CONTROL if baseline else ExperimentCondition.ADJUDICATED
+        ),
     )
     render_metrics(result, out)
     if isinstance(source, ProfiledCandidateSource) and source.unanalysed:

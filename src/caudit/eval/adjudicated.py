@@ -34,6 +34,7 @@ from caudit.eval.case import BenchmarkCase
 from caudit.evidence.store import SourceStore
 from caudit.index.store import Index, build_index
 from caudit.intake import load_scan_plan
+from caudit.llm.checkpoint import CheckpointStore
 from caudit.llm.service import ConsentDecision, LLMProvider, ResponseCache, RunAccount
 from caudit.logging import get_logger
 from caudit.model.candidate import Candidate
@@ -101,6 +102,8 @@ class AdjudicatedSource:
     compile_commands: CompileCommandsFor
     analyzers: Sequence[str] = ()
     cache: ResponseCache | None = None
+    checkpoint_dir: Path | None = None
+    verification_enabled: bool = True
     account: RunAccount = field(init=False)
     #: Case ids that could not be indexed, and so were scored on the
     #: analyzer's word alone. Read by the caller and reported, never dropped.
@@ -140,6 +143,12 @@ class AdjudicatedSource:
             analyzers=self.analyzers,
             account=self.account,
             cache=self.cache,
+            checkpoint=(
+                CheckpointStore(self.checkpoint_dir / f"{case.case_id}.json")
+                if self.checkpoint_dir is not None
+                else None
+            ),
+            verification_enabled=self.verification_enabled,
         ).findings
 
     def _index(self, case: BenchmarkCase, database: Path) -> Index:

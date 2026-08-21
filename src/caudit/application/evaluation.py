@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+from caudit.config.loader import Config
 from caudit.errors import RegionError
 from caudit.eval.baseline import (
     CandidateSource,
@@ -23,12 +24,14 @@ from caudit.eval.baseline import (
 )
 from caudit.eval.case import BenchmarkCase, BenchmarkSuite
 from caudit.eval.compare import CostSummary, RunReport
+from caudit.eval.experiment import ExperimentCondition, build_experiment_manifest
 from caudit.eval.gates import (
     KNOWN_PRODUCER_TOOLS,
     GateResult,
     evaluate_gates,
     gates_passed,
 )
+from caudit.eval.identity import candidate_set_hash, corpus_hash
 from caudit.eval.matching import MatchingPolicy, default_policy
 from caudit.eval.metrics import Metrics, compute_metrics
 from caudit.eval.trace import TraceWriter
@@ -64,6 +67,8 @@ class EvalResult:
     findings_by_case: Mapping[str, tuple[Finding, ...]]
     resolutions: tuple[Resolution, ...]
     tool_versions: Mapping[str, str]
+    cases: tuple[BenchmarkCase, ...] = ()
+    candidates_by_case: Mapping[str, tuple[Candidate, ...]] = field(default_factory=dict)
 
     @property
     def passed(self) -> bool:
@@ -110,6 +115,7 @@ def run_suite(
     cases = select_cases(suite, case_ids)
 
     findings_by_case: dict[str, tuple[Finding, ...]] = {}
+    candidates_by_case: dict[str, tuple[Candidate, ...]] = {}
     resolutions: list[Resolution] = []
 
     for case in cases:
@@ -118,6 +124,7 @@ def run_suite(
         )
         bundle = EvidenceBundle(store)
         candidates = list(candidate_source.candidates_for(case, store))
+        candidates_by_case[case.case_id] = tuple(candidates)
         findings = (
             [promote_candidate(c, store=store) for c in candidates]
             if adjudicator is None
@@ -208,6 +215,8 @@ def run_suite(
         findings_by_case=findings_by_case,
         resolutions=tuple(resolutions),
         tool_versions=dict(candidate_source.tool_versions()),
+        cases=tuple(cases),
+        candidates_by_case=candidates_by_case,
     )
 
 
@@ -218,6 +227,10 @@ def write_metrics(
     policy_versions: Mapping[str, str] | None = None,
     cost: CostSummary | None = None,
     adjudicated: bool = False,
+    config: Config | None = None,
+    experiment_condition: ExperimentCondition | None = None,
+    experiment_prompt_hashes: Mapping[str, str] | None = None,
+    experiment_schema_hashes: Mapping[str, str] | None = None,
 ) -> Path:
     """Serialise the run as a :class:`~caudit.eval.compare.RunReport`.
 
@@ -226,6 +239,28 @@ def write_metrics(
     two files were produced under the same policies, and would difference two
     incomparable runs into a number that looks like a result.
     """
+    experiment = None
+    if config is not None:
+        cases = result.cases
+        identity = corpus_hash(cases)
+        experiment = build_experiment_manifest(
+            config=config,
+            condition=experiment_condition
+            or (
+                ExperimentCondition.ADJUDICATED
+                if adjudicated
+                else ExperimentCondition.ANALYZER_CONTROL
+            ),
+            candidate_set_hash=candidate_set_hash(result.candidates_by_case),
+            candidate_count=sum(len(items) for items in result.candidates_by_case.values()),
+            corpus_hash=identity,
+            corpus_revision="content:" + identity,
+            analyzer_versions=result.tool_versions,
+            policy_versions=policy_versions or {},
+            truth_frame=result.metrics.truth_frame,
+            prompt_hashes=experiment_prompt_hashes,
+            schema_hashes=experiment_schema_hashes,
+        )
     report = RunReport(
         metrics=result.metrics,
         gates=list(result.gates),
@@ -234,6 +269,7 @@ def write_metrics(
         cost=cost or CostSummary(),
         scope=sorted(result.findings_by_case),
         adjudicated=adjudicated,
+        experiment=experiment,
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.loads(report.model_dump_json())

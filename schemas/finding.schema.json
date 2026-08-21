@@ -543,7 +543,7 @@
       "$ref": "#/$defs/Remediation"
     },
     "schema_version": {
-      "default": "1.7.0",
+      "default": "1.8.0",
       "title": "Schema Version",
       "type": "string"
     },
@@ -579,5 +579,5 @@
   ],
   "title": "Finding",
   "type": "object",
-  "x-caudit-schema-version": "1.7.0"
+  "x-caudit-schema-version": "1.8.0"
 }

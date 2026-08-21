@@ -314,5 +314,5 @@
   ],
   "title": "Adjudication",
   "type": "object",
-  "x-caudit-schema-version": "1.7.0"
+  "x-caudit-schema-version": "1.8.0"
 }

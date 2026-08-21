@@ -41,7 +41,7 @@ __all__ = [
 #: Bumped whenever an exported schema changes shape. CI diffs the committed
 #: schemas against a fresh export and fails unless this moved in the same
 #: change.
-SCHEMA_VERSION = "1.7.0"
+SCHEMA_VERSION = "1.8.0"
 
 
 class Confidence(StrEnum):

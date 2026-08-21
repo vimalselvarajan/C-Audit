@@ -24,8 +24,9 @@ import json
 from collections.abc import Mapping
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from caudit.eval.experiment import ExperimentManifest
 from caudit.eval.gates import GateResult
 from caudit.eval.metrics import Metrics
 from caudit.model.cwe import WeaknessFamily
@@ -69,6 +70,11 @@ class CostSummary(BaseModel):
     calls: int = Field(default=0, ge=0)
     input_tokens: int = Field(default=0, ge=0)
     output_tokens: int = Field(default=0, ge=0)
+    thinking_tokens: int = Field(default=0, ge=0)
+    cached_input_tokens: int = Field(default=0, ge=0)
+    tool_use_tokens: int = Field(default=0, ge=0)
+    provider_tokens: int = Field(default=0, ge=0)
+    retry_count: int = Field(default=0, ge=0)
     usd: float = Field(default=0.0, ge=0.0)
     #: Wall time for the whole measured run, which is the latency figure the
     #: milestone asks for. Not a per-request latency: this is what a user
@@ -77,7 +83,13 @@ class CostSummary(BaseModel):
 
     @property
     def total_tokens(self) -> int:
-        return self.input_tokens + self.output_tokens
+        return self.provider_tokens or (
+            self.input_tokens
+            + self.output_tokens
+            + self.thinking_tokens
+            + self.cached_input_tokens
+            + self.tool_use_tokens
+        )
 
     def describe(self) -> str:
         return (
@@ -91,6 +103,11 @@ class CostSummary(BaseModel):
             calls=max(0, self.calls - other.calls),
             input_tokens=max(0, self.input_tokens - other.input_tokens),
             output_tokens=max(0, self.output_tokens - other.output_tokens),
+            thinking_tokens=max(0, self.thinking_tokens - other.thinking_tokens),
+            cached_input_tokens=max(0, self.cached_input_tokens - other.cached_input_tokens),
+            tool_use_tokens=max(0, self.tool_use_tokens - other.tool_use_tokens),
+            provider_tokens=max(0, self.total_tokens - other.total_tokens),
+            retry_count=max(0, self.retry_count - other.retry_count),
             usd=max(0.0, self.usd - other.usd),
             wall_seconds=max(0.0, self.wall_seconds - other.wall_seconds),
         )
@@ -120,6 +137,13 @@ class RunReport(BaseModel):
     #: is the whole point of the comparison, so it is recorded rather than
     #: inferred from a zero cost — a cached adjudicated run also costs nothing.
     adjudicated: bool = False
+    experiment: ExperimentManifest | None = None
+
+    @model_validator(mode="after")
+    def _truth_frame_agrees(self) -> RunReport:
+        if self.experiment is not None and self.metrics.truth_frame != self.experiment.truth_frame:
+            raise ValueError("report metrics truth frame disagrees with its experiment manifest")
+        return self
 
     @property
     def passed(self) -> bool:
@@ -155,6 +179,8 @@ class MetricsDelta(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     macro_f2: float
+    precision: float
+    recall: float
     fp_per_kloc: float
     evidence_validity_rate: float
     citation_resolution_rate: float
@@ -237,6 +263,11 @@ def compare_runs(baseline: RunReport, adjudicated: RunReport) -> ComparisonRepor
 def _caveats(baseline: RunReport, adjudicated: RunReport) -> list[str]:
     """What this comparison could not verify about the two runs."""
     caveats: list[str] = []
+    if baseline.experiment is None or adjudicated.experiment is None:
+        caveats.append(
+            "one of these runs has no immutable experiment manifest, so experiment "
+            "identity could not be fully checked"
+        )
     if not baseline.scope or not adjudicated.scope:
         caveats.append(
             "one of these runs did not record which cases it scored, so this "
@@ -275,6 +306,12 @@ def _assert_comparable(baseline: RunReport, adjudicated: RunReport) -> None:
     policy disagree is not a report either check should be asked to prefer a
     side of.
     """
+    if baseline.experiment is not None and adjudicated.experiment is not None:
+        manifest_left = baseline.experiment.comparable_values()
+        manifest_right = adjudicated.experiment.comparable_values()
+        for field in manifest_left:
+            if manifest_left[field] != manifest_right.get(field):
+                raise ComparisonError(f"experiment {field} differs; these runs are not comparable")
     try:
         baseline.metrics.assert_comparable(adjudicated.metrics)
     except ValueError as exc:
@@ -356,6 +393,8 @@ def _delta(baseline: Metrics, adjudicated: Metrics) -> MetricsDelta:
         )
     return MetricsDelta(
         macro_f2=adjudicated.macro_f2 - baseline.macro_f2,
+        precision=adjudicated.precision - baseline.precision,
+        recall=adjudicated.recall - baseline.recall,
         fp_per_kloc=adjudicated.fp_per_kloc - baseline.fp_per_kloc,
         evidence_validity_rate=(
             adjudicated.evidence_validity_rate - baseline.evidence_validity_rate

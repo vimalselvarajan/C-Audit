@@ -220,7 +220,7 @@ def _source_cost(source: object | None) -> CostSummary:
             item.usage.cached_input_tokens for item in account.accounts.values()
         ),
         tool_use_tokens=sum(item.usage.tool_use_tokens for item in account.accounts.values()),
-        provider_total_tokens=account.total_tokens,
+        provider_tokens=account.total_tokens,
         retry_count=account.retries,
         usd=account.cost_usd(),
     )

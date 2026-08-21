@@ -26,11 +26,15 @@ __all__ = [
     "IndexConfig",
     "IntakeConfig",
     "LLMConfig",
+    "ModelPolicy",
     "ModelTierConfig",
     "PolicyVersions",
     "PricingConfig",
+    "QuotaSnapshot",
     "RetrievalConfig",
     "RetrievalVariantName",
+    "ThinkingLevel",
+    "TierModelPolicy",
     "TierPricing",
     "TokenBudget",
 ]
@@ -55,9 +59,57 @@ class ModelTierConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    triage: str = "gemini-flash-lite-latest"
-    adjudication: str = "gemini-flash-latest"
-    escalation: str = "gemini-pro-latest"
+    triage: str = "gemini-3.5-flash-lite"
+    adjudication: str = "gemini-3.5-flash-lite"
+    escalation: str = "gemini-3.5-flash-lite"
+
+
+class ThinkingLevel(StrEnum):
+    """Provider-supported effort levels, recorded with every request."""
+
+    MINIMAL = "minimal"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
+class TierModelPolicy(BaseModel):
+    """Generation controls for one tier of a stable configured model."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    structured_output: bool = True
+    thinking_level: ThinkingLevel = ThinkingLevel.LOW
+    max_output_tokens: int = Field(default=4_096, gt=0, le=65_536)
+    thinking_token_reserve: int = Field(default=0, ge=0, le=65_536)
+
+
+class ModelPolicy(BaseModel):
+    """Tier-specific generation policy that is part of experiment identity."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    triage: TierModelPolicy = Field(
+        default_factory=lambda: TierModelPolicy(thinking_level=ThinkingLevel.MINIMAL)
+    )
+    adjudication: TierModelPolicy = Field(
+        default_factory=lambda: TierModelPolicy(thinking_level=ThinkingLevel.LOW)
+    )
+    escalation: TierModelPolicy = Field(
+        default_factory=lambda: TierModelPolicy(thinking_level=ThinkingLevel.MEDIUM)
+    )
+
+
+class QuotaSnapshot(BaseModel):
+    """Provider limits observed for this run's quota window."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    source: str = "not_recorded"
+    requests_per_minute: int | None = Field(default=None, gt=0)
+    requests_per_day: int | None = Field(default=None, gt=0)
+    tokens_per_minute: int | None = Field(default=None, gt=0)
+    tokens_per_day: int | None = Field(default=None, gt=0)
 
 
 class PolicyVersions(BaseModel):
@@ -225,6 +277,9 @@ class TierPricing(BaseModel):
 
     input_per_million_usd: float = Field(default=0.0, ge=0.0)
     output_per_million_usd: float = Field(default=0.0, ge=0.0)
+    thinking_per_million_usd: float = Field(default=0.0, ge=0.0)
+    cached_input_per_million_usd: float = Field(default=0.0, ge=0.0)
+    tool_use_per_million_usd: float = Field(default=0.0, ge=0.0)
 
 
 class PricingConfig(BaseModel):
@@ -259,7 +314,10 @@ class LLMConfig(BaseModel):
     max_transport_attempts: int = Field(default=3, ge=1, le=10)
     backoff_seconds: float = Field(default=1.0, ge=0.0, le=60.0)
     backoff_multiplier: float = Field(default=2.0, ge=1.0, le=10.0)
+    backoff_jitter_seconds: float = Field(default=0.25, ge=0.0, le=60.0)
     request_timeout_seconds: float = Field(default=120.0, gt=0.0)
+    model_policy: ModelPolicy = Field(default_factory=ModelPolicy)
+    quota_snapshot: QuotaSnapshot = Field(default_factory=QuotaSnapshot)
     #: Run the cheap tier first to discard obvious non-issues. Disabling it
     #: sends every candidate straight to adjudication, which costs more.
     triage_enabled: bool = True

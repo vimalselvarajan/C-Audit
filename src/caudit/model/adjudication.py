@@ -236,22 +236,41 @@ class Adjudication(BaseModel):
 
 
 class Usage(BaseModel):
-    """Tokens a call actually consumed, **as the provider reported them**.
-
-    Never a local estimate. The per-run ceiling is enforced on these numbers so
-    that the thing being bounded is the thing that gets billed; an estimate
-    would bound a different quantity and diverge from the invoice.
-    """
+    """Detailed provider-reported usage; local estimates never enter this model."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     input_tokens: int = Field(default=0, ge=0)
     output_tokens: int = Field(default=0, ge=0)
+    thinking_tokens: int = Field(default=0, ge=0)
+    cached_input_tokens: int = Field(default=0, ge=0)
+    tool_use_tokens: int = Field(default=0, ge=0)
+    #: Provider total when available; otherwise the sum of reported components.
+    total_tokens: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def _derive_total(self) -> Self:
+        components = (
+            self.input_tokens
+            + self.output_tokens
+            + self.thinking_tokens
+            + self.cached_input_tokens
+            + self.tool_use_tokens
+        )
+        if self.total_tokens == 0 and components:
+            object.__setattr__(self, "total_tokens", components)
+        if self.total_tokens and self.total_tokens < components:
+            raise ValueError("total_tokens cannot be smaller than reported usage components")
+        return self
 
     def __add__(self, other: Usage) -> Usage:
         return Usage(
             input_tokens=self.input_tokens + other.input_tokens,
             output_tokens=self.output_tokens + other.output_tokens,
+            thinking_tokens=self.thinking_tokens + other.thinking_tokens,
+            cached_input_tokens=self.cached_input_tokens + other.cached_input_tokens,
+            tool_use_tokens=self.tool_use_tokens + other.tool_use_tokens,
+            total_tokens=self.total_tokens + other.total_tokens,
         )
 
 
