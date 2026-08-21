@@ -115,8 +115,12 @@ def test_ci_invokes_the_same_make_target() -> None:
     workflow = yaml.safe_load(
         (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     )
-    steps = workflow["jobs"]["check"]["steps"]
-    commands = " ".join(str(step.get("run", "")) for step in steps)
+    commands = [
+        step.get("run")
+        for job in workflow["jobs"].values()
+        for step in job.get("steps", [])
+        if "run" in step
+    ]
     assert "make check" in commands
 
 

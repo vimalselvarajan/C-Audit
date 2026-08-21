@@ -1,5 +1,11 @@
 """Exact Gemini capability profiles."""
 
+from caudit.config.schema import (
+    FLASH_LITE_MODEL_ID as CONFIG_FLASH_LITE_MODEL_ID,
+)
+from caudit.config.schema import (
+    ModelTierConfig,
+)
 from caudit.llm.capabilities import (
     CAPABILITY_PROFILE_VERSION,
     FLASH_LITE_MODEL_ID,
@@ -8,9 +14,18 @@ from caudit.llm.capabilities import (
 
 
 def test_the_stable_flash_lite_profile_names_every_required_capability() -> None:
-    profile = capabilities_for(FLASH_LITE_MODEL_ID)
+    defaults = ModelTierConfig()
+    assert FLASH_LITE_MODEL_ID == CONFIG_FLASH_LITE_MODEL_ID
+    assert (defaults.triage, defaults.adjudication, defaults.escalation) == (
+        CONFIG_FLASH_LITE_MODEL_ID,
+        CONFIG_FLASH_LITE_MODEL_ID,
+        CONFIG_FLASH_LITE_MODEL_ID,
+    )
+
+    profile = capabilities_for(defaults.adjudication)
 
     assert profile is not None
+    assert profile.model_id == CONFIG_FLASH_LITE_MODEL_ID
     assert profile.stable
     assert profile.structured_output
     assert profile.function_calling

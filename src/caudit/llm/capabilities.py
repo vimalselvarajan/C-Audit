@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final
 
+from caudit.config.schema import FLASH_LITE_MODEL_ID
+
 __all__ = [
     "CAPABILITY_PROFILE_VERSION",
     "FLASH_LITE_MODEL_ID",
@@ -13,7 +15,6 @@ __all__ = [
 ]
 
 CAPABILITY_PROFILE_VERSION: Final = "1"
-FLASH_LITE_MODEL_ID: Final = "gemini-3.5-flash-lite"
 
 
 @dataclass(frozen=True)

@@ -20,6 +20,7 @@ from typing import Final, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 __all__ = [
+    "FLASH_LITE_MODEL_ID",
     "AnalyzerConfig",
     "Config",
     "ConfigSource",
@@ -43,6 +44,7 @@ ENV_PREFIX: Final = "CAUDIT_"
 #: Nesting separator inside an environment variable name:
 #: ``CAUDIT_MODELS__TRIAGE`` sets ``models.triage``.
 ENV_NEST: Final = "__"
+FLASH_LITE_MODEL_ID: Final = "gemini-3.5-flash-lite"
 
 
 class ConfigSource(StrEnum):
@@ -59,9 +61,9 @@ class ModelTierConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    triage: str = "gemini-3.5-flash-lite"
-    adjudication: str = "gemini-3.5-flash-lite"
-    escalation: str = "gemini-3.5-flash-lite"
+    triage: str = FLASH_LITE_MODEL_ID
+    adjudication: str = FLASH_LITE_MODEL_ID
+    escalation: str = FLASH_LITE_MODEL_ID
 
 
 class ThinkingLevel(StrEnum):
